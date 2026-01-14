@@ -140,8 +140,8 @@ def main():
     """Main entry point."""
     args = parse_args()
 
-    # Get API key
-    api_key = args.api_key or os.getenv("ALPHA_VANTAGE_API_KEY")
+    # Get API key (check multiple common names)
+    api_key = args.api_key or os.getenv("ALPHA_VANTAGE_API_KEY") or os.getenv("ALPHAVANTAGE_KEY") or os.getenv("ALPHAVANTAGE_API_KEY")
     if not api_key:
         print("Error: Alpha Vantage API key required.")
         print("Set ALPHA_VANTAGE_API_KEY environment variable or use --api-key flag")
