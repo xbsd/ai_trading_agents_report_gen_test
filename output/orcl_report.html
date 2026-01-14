@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORCL Strategic Analysis | KXAITrader Report</title>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        :root {
+            --navy: #003366;
+            --charcoal: #404040;
+            --teal: #00A3A1;
+            --gold: #F2A900;
+            --coral: #E06055;
+            --light-grey: #F5F5F5;
+            --medium-grey: #CCCCCC;
+            --white: #FFFFFF;
+            --green: #2ECC71;
+            --font-heading: 'Helvetica Neue', 'Arial', sans-serif;
+            --font-body: 'Georgia', 'Times New Roman', serif;
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            --max-width: 950px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; line-height: 1.6; }
+        body {
+            font-family: var(--font-body);
+            color: var(--charcoal);
+            background-color: var(--white);
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: var(--spacing-xl) var(--spacing-lg);
+        }
+
+        h1 {
+            font-family: var(--font-heading);
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--navy);
+            line-height: 1.2;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .subtitle {
+            font-family: var(--font-heading);
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: var(--teal);
+            line-height: 1.4;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        h2 {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--navy);
+            margin-top: var(--spacing-xl);
+            margin-bottom: var(--spacing-md);
+            padding-top: var(--spacing-md);
+            border-top: 3px solid var(--navy);
+        }
+
+        h3 {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--charcoal);
+            margin-top: var(--spacing-lg);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        p {
+            margin-bottom: var(--spacing-md);
+            text-align: justify;
+        }
+
+        .report-header {
+            margin-bottom: var(--spacing-xl);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--medium-grey);
+        }
+
+        .metadata {
+            font-family: var(--font-heading);
+            font-size: 0.875rem;
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+            margin-top: var(--spacing-md);
+        }
+
+        .metadata span {
+            padding: 0.25rem 0.75rem;
+            background-color: var(--light-grey);
+            border-radius: 4px;
+        }
+
+        /* Agent Findings Highlights Section */
+        .agent-highlights {
+            background: linear-gradient(135deg, var(--navy) 0%, #004d99 100%);
+            color: var(--white);
+            padding: var(--spacing-xl);
+            margin: var(--spacing-lg) 0;
+            border-radius: 8px;
+        }
+
+        .agent-highlights h2 {
+            color: var(--white);
+            border-top: none;
+            margin-top: 0;
+            padding-top: 0;
+            font-size: 1.5rem;
+        }
+
+        .agent-highlights .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+        }
+
+        .findings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+
+        .finding-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: var(--spacing-md);
+            border-radius: 6px;
+            border-left: 4px solid var(--teal);
+        }
+
+        .finding-card h4 {
+            font-family: var(--font-heading);
+            font-size: 0.9rem;
+            color: var(--teal);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .finding-card p {
+            color: var(--white);
+            font-size: 0.95rem;
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        /* Trader Insights Summary */
+        .trader-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+        }
+
+        .trader-badge {
+            background: rgba(255, 255, 255, 0.15);
+            padding: var(--spacing-sm);
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .trader-badge .type {
+            font-family: var(--font-heading);
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .trader-badge .relevance {
+            font-family: var(--font-heading);
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--white);
+            margin-top: 4px;
+        }
+
+        .trader-badge .confidence {
+            font-size: 0.75rem;
+            color: var(--teal);
+            margin-top: 2px;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-sm);
+            margin: var(--spacing-md) 0;
+        }
+
+        .metric-box {
+            background: var(--light-grey);
+            border: 1px solid var(--medium-grey);
+            padding: var(--spacing-sm);
+            text-align: center;
+            border-radius: 4px;
+        }
+
+        .metric-value {
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .metric-value.positive { color: var(--green); }
+        .metric-value.negative { color: var(--coral); }
+
+        .metric-label {
+            font-family: var(--font-heading);
+            font-size: 0.7rem;
+            color: var(--charcoal);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            margin: var(--spacing-lg) 0;
+            padding: var(--spacing-md);
+            background: var(--light-grey);
+            border-radius: 8px;
+        }
+
+        .chart-container h3 {
+            color: var(--navy);
+            margin-top: 0;
+            margin-bottom: var(--spacing-md);
+            font-size: 1.1rem;
+        }
+
+        .chart-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 4px;
+        }
+
+        .chart-wrapper {
+            width: 100%;
+            min-height: 400px;
+            background: var(--white);
+            border-radius: 4px;
+        }
+
+        .chart-wrapper .plotly-graph-div {
+            width: 100% !important;
+        }
+
+        .chart-caption {
+            font-family: var(--font-heading);
+            font-size: 0.8rem;
+            color: var(--charcoal);
+            margin-top: var(--spacing-sm);
+            font-style: italic;
+        }
+
+        /* Trader Insight Cards */
+        .insight-card {
+            background: var(--white);
+            border: 1px solid var(--medium-grey);
+            border-radius: 8px;
+            margin: var(--spacing-lg) 0;
+            overflow: hidden;
+        }
+
+        .insight-header {
+            background: var(--light-grey);
+            padding: var(--spacing-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--medium-grey);
+        }
+
+        .insight-header h3 {
+            margin: 0;
+            color: var(--navy);
+            font-size: 1.15rem;
+        }
+
+        .insight-badges {
+            display: flex;
+            gap: var(--spacing-xs);
+        }
+
+        .badge {
+            font-family: var(--font-heading);
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-high { background: var(--green); color: var(--white); }
+        .badge-medium { background: var(--gold); color: var(--charcoal); }
+        .badge-low { background: var(--medium-grey); color: var(--charcoal); }
+        .badge-confidence { background: var(--teal); color: var(--white); }
+
+        .insight-body {
+            padding: var(--spacing-md);
+        }
+
+        .insight-section {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .insight-section h4 {
+            font-family: var(--font-heading);
+            font-size: 0.9rem;
+            color: var(--teal);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .action-box {
+            background: var(--light-grey);
+            border-left: 4px solid var(--gold);
+            padding: var(--spacing-md);
+            margin: var(--spacing-sm) 0;
+            font-family: var(--font-heading);
+            font-size: 0.9rem;
+        }
+
+        .risk-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .risk-list li {
+            padding: var(--spacing-xs) 0;
+            padding-left: var(--spacing-md);
+            position: relative;
+            font-size: 0.9rem;
+        }
+
+        .risk-list li::before {
+            content: "!";
+            position: absolute;
+            left: 0;
+            color: var(--coral);
+            font-weight: bold;
+        }
+
+        /* Technical Indicators Table */
+        .tech-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--font-heading);
+            font-size: 0.9rem;
+            margin: var(--spacing-md) 0;
+        }
+
+        .tech-table th, .tech-table td {
+            padding: var(--spacing-sm);
+            text-align: left;
+            border-bottom: 1px solid var(--medium-grey);
+        }
+
+        .tech-table th {
+            background: var(--navy);
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        .tech-table tr:nth-child(even) {
+            background: var(--light-grey);
+        }
+
+        /* Footer */
+        .report-footer {
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-lg);
+            border-top: 2px solid var(--navy);
+            font-family: var(--font-heading);
+            font-size: 0.85rem;
+        }
+
+        .sources h4 {
+            color: var(--navy);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .sources ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sources li {
+            padding-left: var(--spacing-md);
+            position: relative;
+            margin-bottom: 0.25rem;
+        }
+
+        .sources li::before {
+            content: "\2192";
+            position: absolute;
+            left: 0;
+            color: var(--teal);
+        }
+
+        .disclaimer {
+            font-size: 0.8rem;
+            color: var(--charcoal);
+            font-style: italic;
+            margin-top: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--light-grey);
+            border-radius: 4px;
+        }
+
+        @media screen and (max-width: 768px) {
+            html { font-size: 14px; }
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+            .findings-grid { grid-template-columns: 1fr; }
+            .trader-summary { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media print {
+            body { max-width: 100%; padding: 1in; }
+            .agent-highlights { background: var(--navy); -webkit-print-color-adjust: exact; }
+            .chart-container { page-break-inside: avoid; }
+            .insight-card { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <header class="report-header">
+        <h1>Oracle Corporation (ORCL) stock fell ~13% today (Dec 11, 2025)</h1>
+        <p class="subtitle">Oracle has experienced significant volatility with a notable price decline from October highs near $321 to current levels around $204.68 (as of January 12, 2026). The stock is currently trading below ...</p>
+        <div class="metadata">
+            <span>Report Date: January 14, 2026</span>
+            <span>Asset: ORCL</span>
+            <span>Risk Assessment: Moderate</span>
+            <span>Confidence: 80%</span>
+        </div>
+    </header>
+
+    <!-- Agent Findings Highlights -->
+    <section class="agent-highlights">
+        <h2>AI Agent Key Findings</h2>
+        <p class="subtitle">Critical insights extracted from multi-agent analysis</p>
+
+        <div class="findings-grid">
+            <div class="finding-card">
+                <h4>Current Price</h4>
+                <p><strong>$239.46</strong> (+1.53% from previous close)</p>
+            </div>
+            <div class="finding-card">
+                <h4>From Period High</h4>
+                <p><strong>-3.3%</strong> from $247.51</p>
+            </div>
+            <div class="finding-card">
+                <h4>From Period Low</h4>
+                <p><strong>+67.6%</strong> from $142.89</p>
+            </div>
+            <div class="finding-card">
+                <h4>Technical Posture</h4>
+                <p><strong>Bullish</strong> - Above 50 & Above 200 SMA</p>
+            </div>
+            <div class="finding-card">
+                <h4>RSI Reading</h4>
+                <p><strong>75.8</strong> - Overbought</p>
+            </div>
+            <div class="finding-card">
+                <h4>MACD Signal</h4>
+                <p><strong>1.26</strong> - Bullish momentum</p>
+            </div>
+        </div>
+
+        <h3 style="color: white; margin-top: 2rem; margin-bottom: 1rem;">Trader Relevance Summary</h3>
+        <div class="trader-summary">
+            <div class="trader-badge">
+                <div class="type">Day Trader</div>
+                <div class="relevance">High</div>
+                <div class="confidence">MODERATE</div>
+            </div>
+            <div class="trader-badge">
+                <div class="type">Swing Trader</div>
+                <div class="relevance">High</div>
+                <div class="confidence">HIGH</div>
+            </div>
+            <div class="trader-badge">
+                <div class="type">Momentum</div>
+                <div class="relevance">Medium</div>
+                <div class="confidence">MODERATE</div>
+            </div>
+            <div class="trader-badge">
+                <div class="type">Growth</div>
+                <div class="relevance">Medium</div>
+                <div class="confidence">MODERATE</div>
+            </div>
+            <div class="trader-badge">
+                <div class="type">Value</div>
+                <div class="relevance">Medium</div>
+                <div class="confidence">LOW</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Metrics -->
+    <section>
+        <h2>Market Snapshot</h2>
+        <div class="metrics-grid">
+            <div class="metric-box">
+                <div class="metric-value">$239.46</div>
+                <div class="metric-label">Current Price</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-value positive">+1.53%</div>
+                <div class="metric-label">Daily Change</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-value">$231.95</div>
+                <div class="metric-label">50-Day SMA</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-value">$198.09</div>
+                <div class="metric-label">200-Day SMA</div>
+            </div>
+        </div>
+
+        <table class="tech-table">
+            <thead>
+                <tr>
+                    <th>Indicator</th>
+                    <th>Value</th>
+                    <th>Signal</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>RSI (14)</td>
+                    <td>75.85</td>
+                    <td>Overbought - Consider selling</td>
+                </tr>
+                <tr>
+                    <td>MACD</td>
+                    <td>1.2562</td>
+                    <td>Bullish momentum</td>
+                </tr>
+                <tr>
+                    <td>Price vs 50 SMA</td>
+                    <td>+3.24%</td>
+                    <td>Above - Bullish</td>
+                </tr>
+                <tr>
+                    <td>Price vs 200 SMA</td>
+                    <td>+20.89%</td>
+                    <td>Above - Long-term bullish</td>
+                </tr>
+                <tr>
+                    <td>ATR (14)</td>
+                    <td>$6.55</td>
+                    <td>Daily volatility range</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Charts Section -->
+    <section>
+        <h2>Technical Analysis Charts</h2>
+        <p style="font-size: 0.9rem; color: var(--charcoal); margin-bottom: 1rem;"><em>Interactive charts - hover over data points for details, use toolbar to zoom and pan</em></p>
+
+        <div class="chart-container">
+            <h3>Price & Volume Analysis</h3>
+            <div class="chart-wrapper"><div>                            <div id="65cc8322-6ded-4d91-b066-76433a95f43c" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("65cc8322-6ded-4d91-b066-76433a95f43c")) {                    Plotly.newPlot(                        "65cc8322-6ded-4d91-b066-76433a95f43c",                        [{"hovertemplate":"$%{y:.2f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#003366","width":2},"mode":"lines","name":"Price","x":["2025-08-05T22:04:26.008323","2025-08-06T22:04:26.008323","2025-08-07T22:04:26.008323","2025-08-08T22:04:26.008323","2025-08-11T22:04:26.008323","2025-08-12T22:04:26.008323","2025-08-13T22:04:26.008323","2025-08-14T22:04:26.008323","2025-08-15T22:04:26.008323","2025-08-18T22:04:26.008323","2025-08-19T22:04:26.008323","2025-08-20T22:04:26.008323","2025-08-21T22:04:26.008323","2025-08-22T22:04:26.008323","2025-08-25T22:04:26.008323","2025-08-26T22:04:26.008323","2025-08-27T22:04:26.008323","2025-08-28T22:04:26.008323","2025-08-29T22:04:26.008323","2025-09-01T22:04:26.008323","2025-09-02T22:04:26.008323","2025-09-03T22:04:26.008323","2025-09-04T22:04:26.008323","2025-09-05T22:04:26.008323","2025-09-08T22:04:26.008323","2025-09-09T22:04:26.008323","2025-09-10T22:04:26.008323","2025-09-11T22:04:26.008323","2025-09-12T22:04:26.008323","2025-09-15T22:04:26.008323","2025-09-16T22:04:26.008323","2025-09-17T22:04:26.008323","2025-09-18T22:04:26.008323","2025-09-19T22:04:26.008323","2025-09-22T22:04:26.008323","2025-09-23T22:04:26.008323","2025-09-24T22:04:26.008323","2025-09-25T22:04:26.008323","2025-09-26T22:04:26.008323","2025-09-29T22:04:26.008323","2025-09-30T22:04:26.008323","2025-10-01T22:04:26.008323","2025-10-02T22:04:26.008323","2025-10-03T22:04:26.008323","2025-10-06T22:04:26.008323","2025-10-07T22:04:26.008323","2025-10-08T22:04:26.008323","2025-10-09T22:04:26.008323","2025-10-10T22:04:26.008323","2025-10-13T22:04:26.008323","2025-10-14T22:04:26.008323","2025-10-15T22:04:26.008323","2025-10-16T22:04:26.008323","2025-10-17T22:04:26.008323","2025-10-20T22:04:26.008323","2025-10-21T22:04:26.008323","2025-10-22T22:04:26.008323","2025-10-23T22:04:26.008323","2025-10-24T22:04:26.008323","2025-10-27T22:04:26.008323","2025-10-28T22:04:26.008323","2025-10-29T22:04:26.008323","2025-10-30T22:04:26.008323","2025-10-31T22:04:26.008323","2025-11-03T22:04:26.008323","2025-11-04T22:04:26.008323","2025-11-05T22:04:26.008323","2025-11-06T22:04:26.008323","2025-11-07T22:04:26.008323","2025-11-10T22:04:26.008323","2025-11-11T22:04:26.008323","2025-11-12T22:04:26.008323","2025-11-13T22:04:26.008323","2025-11-14T22:04:26.008323","2025-11-17T22:04:26.008323","2025-11-18T22:04:26.008323","2025-11-19T22:04:26.008323","2025-11-20T22:04:26.008323","2025-11-21T22:04:26.008323","2025-11-24T22:04:26.008323","2025-11-25T22:04:26.008323","2025-11-26T22:04:26.008323","2025-11-27T22:04:26.008323","2025-11-28T22:04:26.008323","2025-12-01T22:04:26.008323","2025-12-02T22:04:26.008323","2025-12-03T22:04:26.008323","2025-12-04T22:04:26.008323","2025-12-05T22:04:26.008323","2025-12-08T22:04:26.008323"],"y":{"dtype":"f8","bdata":"CtejcD0iZ0BI4XoUrj9nQGZmZmZm\u002fmZAFK5H4XoMZ0CF61G4HuVmQHE9Ctej+GZAzczMzMxMZ0AAAAAAABBoQK5H4XoUfmdAhetRuB6FaEAfhetRuJZnQHsUrkfhimdAuB6F61HYZ0DhehSuRwFoQDMzMzMzu2dAcT0K16OoZ0DsUbgehXNnQOxRuB6FM2dA16NwPQqfZ0ApXI\u002fC9dBnQDMzMzMzg2dAZmZmZmb2Z0B7FK5H4SJoQGZmZmZmjmhAzczMzMzkaEDD9Shcj4JoQOxRuB6FQ2hAj8L1KFynaECkcD0K1\u002ftoQHE9CtejAGlA16NwPQoXaUB7FK5H4cJpQM3MzMzMfGlApHA9CtfLaUApXI\u002fC9bhpQFyPwvUopGlAFK5H4Xo8akDsUbgehbNqQDMzMzMzK2tA4XoUrkfpa0CF61G4HvVrQI\u002fC9ShcX2xA7FG4HoU7bEAzMzMzM3NsQJqZmZmZaWxAcT0K16OAbEBxPQrXo+BsQOF6FK5HcWxAMzMzMzOrbUBcj8L1KBxtQHE9CtejcGxAexSuR+EibUDD9Shcj6JtQDMzMzMzC25A9ihcj8J1bkCuR+F6FH5uQBSuR+F6\u002fG1ACtejcD0SbkBcj8L1KLRtQMP1KFyPUm5ArkfhehRGbkBxPQrXo9BtQFK4HoXrqW1AexSuR+HybUDXo3A9CqdtQBSuR+F6NG1AMzMzMzNjbUAK16NwPZJtQAAAAAAAUG1ApHA9CtcTbUBxPQrXo0BtQArXo3A9cmxASOF6FK6va0CkcD0K11NrQAAAAAAAQGtAhetRuB51a0AfhetRuE5sQD0K16Nw1WxAuB6F61HIbEC4HoXrUdBsQNejcD0KR2xAH4XrUbhObEBI4XoUri9sQHE9CtejaGxAMzMzMzP7a0AAAAAAAFBsQClcj8L1OG1ApHA9CtczbUAzMzMzM3ttQB+F61G47m1A"},"type":"scatter","xaxis":"x","yaxis":"y"},{"hovertemplate":"$%{y:.2f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#00A3A1","dash":"dash","width":1.5},"mode":"lines","name":"50-day SMA","x":["2025-08-05T22:04:26.008323","2025-08-06T22:04:26.008323","2025-08-07T22:04:26.008323","2025-08-08T22:04:26.008323","2025-08-11T22:04:26.008323","2025-08-12T22:04:26.008323","2025-08-13T22:04:26.008323","2025-08-14T22:04:26.008323","2025-08-15T22:04:26.008323","2025-08-18T22:04:26.008323","2025-08-19T22:04:26.008323","2025-08-20T22:04:26.008323","2025-08-21T22:04:26.008323","2025-08-22T22:04:26.008323","2025-08-25T22:04:26.008323","2025-08-26T22:04:26.008323","2025-08-27T22:04:26.008323","2025-08-28T22:04:26.008323","2025-08-29T22:04:26.008323","2025-09-01T22:04:26.008323","2025-09-02T22:04:26.008323","2025-09-03T22:04:26.008323","2025-09-04T22:04:26.008323","2025-09-05T22:04:26.008323","2025-09-08T22:04:26.008323","2025-09-09T22:04:26.008323","2025-09-10T22:04:26.008323","2025-09-11T22:04:26.008323","2025-09-12T22:04:26.008323","2025-09-15T22:04:26.008323","2025-09-16T22:04:26.008323","2025-09-17T22:04:26.008323","2025-09-18T22:04:26.008323","2025-09-19T22:04:26.008323","2025-09-22T22:04:26.008323","2025-09-23T22:04:26.008323","2025-09-24T22:04:26.008323","2025-09-25T22:04:26.008323","2025-09-26T22:04:26.008323","2025-09-29T22:04:26.008323","2025-09-30T22:04:26.008323","2025-10-01T22:04:26.008323","2025-10-02T22:04:26.008323","2025-10-03T22:04:26.008323","2025-10-06T22:04:26.008323","2025-10-07T22:04:26.008323","2025-10-08T22:04:26.008323","2025-10-09T22:04:26.008323","2025-10-10T22:04:26.008323","2025-10-13T22:04:26.008323","2025-10-14T22:04:26.008323","2025-10-15T22:04:26.008323","2025-10-16T22:04:26.008323","2025-10-17T22:04:26.008323","2025-10-20T22:04:26.008323","2025-10-21T22:04:26.008323","2025-10-22T22:04:26.008323","2025-10-23T22:04:26.008323","2025-10-24T22:04:26.008323","2025-10-27T22:04:26.008323","2025-10-28T22:04:26.008323","2025-10-29T22:04:26.008323","2025-10-30T22:04:26.008323","2025-10-31T22:04:26.008323","2025-11-03T22:04:26.008323","2025-11-04T22:04:26.008323","2025-11-05T22:04:26.008323","2025-11-06T22:04:26.008323","2025-11-07T22:04:26.008323","2025-11-10T22:04:26.008323","2025-11-11T22:04:26.008323","2025-11-12T22:04:26.008323","2025-11-13T22:04:26.008323","2025-11-14T22:04:26.008323","2025-11-17T22:04:26.008323","2025-11-18T22:04:26.008323","2025-11-19T22:04:26.008323","2025-11-20T22:04:26.008323","2025-11-21T22:04:26.008323","2025-11-24T22:04:26.008323","2025-11-25T22:04:26.008323","2025-11-26T22:04:26.008323","2025-11-27T22:04:26.008323","2025-11-28T22:04:26.008323","2025-12-01T22:04:26.008323","2025-12-02T22:04:26.008323","2025-12-03T22:04:26.008323","2025-12-04T22:04:26.008323","2025-12-05T22:04:26.008323","2025-12-08T22:04:26.008323"],"y":{"dtype":"f8","bdata":"Lv8h\u002ffYZaEBKnYAmwhJoQG\u002fOiNLeDGhAFNBE2PAIaEAKaCJseAJoQHQCmggb\u002fmdAJuSDns36Z0CDBMWPMftnQBgEVg4t+mdAhetRuB75Z0Doaiv2l\u002fFnQFdbsb\u002fs7mdAt2J\u002f2T3tZ0BSuB6F6+1nQBHpt68D62dATMgHPZvpZ0Cye\u002fKwUOdnQBiV1Alo4mdAEvJBz2bdZ0AG8BZIUNxnQAMJih9j2mdAQBNhw9PbZ0Bqmnecot9nQMzuycNC4WdA1sVtNIDjZ0A7cM6I0uZnQPw6cM6I5mdAASuHFtniZ0DojCjtDd5nQC9MpgpG3WdASuoENBHeZ0AfFmpN895nQA6+MJkq4GdABVYOLbLhZ0BjEFg5tOBnQBODwMqh4WdAxLEubqPlZ0AyCKwcWvRnQFSfq63YB2hAumsJ+aAfaEA0gLdAgjpoQKTfvg6cU2hAs3vysFBvaEAxuycPC41oQLSmeccpqmhA3NeBc0bEaEBsmnecouNoQGZEaW\u002fw\u002fWhAUdobfGEeaUDKMsSxLj5pQIV80LNZWWlAJJf\u002fkH53aUB9rrZif5lpQFtkO99PvWlA3EYDeAvkaUASx7q4jQpqQGlv8IXJLGpAZDvfT41LakDdk4eFWmtqQEVHcvkPiWpA7MA5I0qrakBsCfmgZ8tqQNobfGEy6WpAumsJ+aAHa0Aac9cS8iVrQCbChqdXQmtA3Pl+arxga0CFfNCzWYFrQCD0bFZ9nmtA2qz6XG25a0CJQWDl0NZrQFqGONbF7WtAcoqO5PL\u002fa0Du68A5Iw5sQOC+DpwzGmxARdjw9EopbECm6Egu\u002fz1sQLraiv1lU2xAASuHFtlmbEA8TtGRXHpsQPRsVn2uimxAcvkP6beXbECoxks3iaVsQPP91HjpsmxAvJaQD3q+bECqYFRSJ8xsQJYhjnVx22xAFB3J5T\u002fobEC6jQbwFvRsQJF++zpw\u002fmxA"},"type":"scatter","xaxis":"x","yaxis":"y"},{"hovertemplate":"$%{y:.2f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#F2A900","dash":"dash","width":1.5},"mode":"lines","name":"200-day SMA","x":["2025-08-05T22:04:26.008323","2025-08-06T22:04:26.008323","2025-08-07T22:04:26.008323","2025-08-08T22:04:26.008323","2025-08-11T22:04:26.008323","2025-08-12T22:04:26.008323","2025-08-13T22:04:26.008323","2025-08-14T22:04:26.008323","2025-08-15T22:04:26.008323","2025-08-18T22:04:26.008323","2025-08-19T22:04:26.008323","2025-08-20T22:04:26.008323","2025-08-21T22:04:26.008323","2025-08-22T22:04:26.008323","2025-08-25T22:04:26.008323","2025-08-26T22:04:26.008323","2025-08-27T22:04:26.008323","2025-08-28T22:04:26.008323","2025-08-29T22:04:26.008323","2025-09-01T22:04:26.008323","2025-09-02T22:04:26.008323","2025-09-03T22:04:26.008323","2025-09-04T22:04:26.008323","2025-09-05T22:04:26.008323","2025-09-08T22:04:26.008323","2025-09-09T22:04:26.008323","2025-09-10T22:04:26.008323","2025-09-11T22:04:26.008323","2025-09-12T22:04:26.008323","2025-09-15T22:04:26.008323","2025-09-16T22:04:26.008323","2025-09-17T22:04:26.008323","2025-09-18T22:04:26.008323","2025-09-19T22:04:26.008323","2025-09-22T22:04:26.008323","2025-09-23T22:04:26.008323","2025-09-24T22:04:26.008323","2025-09-25T22:04:26.008323","2025-09-26T22:04:26.008323","2025-09-29T22:04:26.008323","2025-09-30T22:04:26.008323","2025-10-01T22:04:26.008323","2025-10-02T22:04:26.008323","2025-10-03T22:04:26.008323","2025-10-06T22:04:26.008323","2025-10-07T22:04:26.008323","2025-10-08T22:04:26.008323","2025-10-09T22:04:26.008323","2025-10-10T22:04:26.008323","2025-10-13T22:04:26.008323","2025-10-14T22:04:26.008323","2025-10-15T22:04:26.008323","2025-10-16T22:04:26.008323","2025-10-17T22:04:26.008323","2025-10-20T22:04:26.008323","2025-10-21T22:04:26.008323","2025-10-22T22:04:26.008323","2025-10-23T22:04:26.008323","2025-10-24T22:04:26.008323","2025-10-27T22:04:26.008323","2025-10-28T22:04:26.008323","2025-10-29T22:04:26.008323","2025-10-30T22:04:26.008323","2025-10-31T22:04:26.008323","2025-11-03T22:04:26.008323","2025-11-04T22:04:26.008323","2025-11-05T22:04:26.008323","2025-11-06T22:04:26.008323","2025-11-07T22:04:26.008323","2025-11-10T22:04:26.008323","2025-11-11T22:04:26.008323","2025-11-12T22:04:26.008323","2025-11-13T22:04:26.008323","2025-11-14T22:04:26.008323","2025-11-17T22:04:26.008323","2025-11-18T22:04:26.008323","2025-11-19T22:04:26.008323","2025-11-20T22:04:26.008323","2025-11-21T22:04:26.008323","2025-11-24T22:04:26.008323","2025-11-25T22:04:26.008323","2025-11-26T22:04:26.008323","2025-11-27T22:04:26.008323","2025-11-28T22:04:26.008323","2025-12-01T22:04:26.008323","2025-12-02T22:04:26.008323","2025-12-03T22:04:26.008323","2025-12-04T22:04:26.008323","2025-12-05T22:04:26.008323","2025-12-08T22:04:26.008323"],"y":{"dtype":"f8","bdata":"OiNKe4NVZUBWMCqpE1llQLbz\u002fdR4XGVAMuauJeRfZUD\u002f1HjpJmRlQAg9m1WfaGVAIR\u002f0bFZtZUCTqYJRSXJlQLOd76fGdmVA+1xtxf58ZUDc14FzRoJlQIQvTKYKh2VAINJvXweMZUDMf0i\u002ffZFlQNJNYhBYlmVA6Iwo7Q2bZUAFo5I6AZ9lQAAAAAAAo2VACvmgZ7OnZUBbQj7o2axlQN2Th4VasmVAk6mCUUm4ZUBbZDvfT75lQG\u002fOiNLexGVAklz+Q\u002frLZUBF2PD0StNlQCWX\u002f5B+2mVANqs+V1viZUDBFyZTBetlQLdAguLH82VAWDm0yHb8ZUCF61G4HgVmQM2qz9VWDWZAk4eFWtMVZkDBqKROQB5mQOELk6mCJ2ZArmnecYoxZkBDYOXQIjxmQGEyVTAqRmZAsr\u002fsnjxRZkDvp8ZLN1xmQDQRNjy9Z2ZAhslUwahzZkCjkjoBTX9mQEDG3LWEimZASFD8GHOVZkC4HoXrUaFmQATnjCjtq2ZAjuTyH9K4ZkAK+aBns8RmQEzIBz2bzmZArM\u002fVVuzZZkC7SQwCK+ZmQHsUrkfh8mZA+MJkqmAAZ0C2hHzQsw5nQM2qz9VWHGdASsgHPZsqZ0C7SQwCKzhnQC\u002f\u002fIf32RmdAcoqO5PJUZ0B9PzVeumJnQFg5tMh2cGdAYzJVMCp+Z0Bgdk8eFoxnQAyTqYJRmWdA+jHmriWmZ0AAAAAAALRnQNus+lxtwWdAKH6MuWvOZ0BuNIC3QNtnQIEmwoan52dAaLPqc7XzZ0A7AU2EDf9nQFJJnYAmCmhAAwmKH2MVaEBUUiegiSFoQPRsVn2uLmhAHMnlP6Q7aEB4CyQofkhoQKNFtvP9VGhAGCZTBaNgaECAt0CC4mtoQAAAAAAAeGhAt2J\u002f2T2DaEBMN4lBYI9oQJOpglFJnGhAlPYGX5ioaEDf4AuTqbVoQI7k8h\u002fSwmhA"},"type":"scatter","xaxis":"x","yaxis":"y"},{"hovertemplate":"%{y:.1f}M\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":["#2ECC71","#2ECC71","#E06055","#2ECC71","#E06055","#E06055","#2ECC71","#2ECC71","#E06055","#2ECC71","#E06055","#2ECC71","#2ECC71","#2ECC71","#E06055","#E06055","#E06055","#E06055","#2ECC71","#2ECC71","#E06055","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#E06055","#E06055","#2ECC71","#2ECC71","#E06055","#2ECC71","#2ECC71","#E06055","#2ECC71","#E06055","#E06055","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#E06055","#2ECC71","#E06055","#E06055","#E06055","#2ECC71","#2ECC71","#E06055","#2ECC71","#E06055","#E06055","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#E06055","#E06055","#E06055","#E06055","#2ECC71","#2ECC71","#E06055","#E06055","#2ECC71","#E06055","#E06055","#2ECC71","#2ECC71","#E06055","#E06055","#2ECC71","#E06055","#E06055","#E06055","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#E06055","#E06055","#E06055","#E06055","#2ECC71","#E06055","#2ECC71","#2ECC71","#E06055","#2ECC71","#2ECC71"]},"name":"Volume","opacity":0.7,"x":["2025-08-05T22:04:26.008323","2025-08-06T22:04:26.008323","2025-08-07T22:04:26.008323","2025-08-08T22:04:26.008323","2025-08-11T22:04:26.008323","2025-08-12T22:04:26.008323","2025-08-13T22:04:26.008323","2025-08-14T22:04:26.008323","2025-08-15T22:04:26.008323","2025-08-18T22:04:26.008323","2025-08-19T22:04:26.008323","2025-08-20T22:04:26.008323","2025-08-21T22:04:26.008323","2025-08-22T22:04:26.008323","2025-08-25T22:04:26.008323","2025-08-26T22:04:26.008323","2025-08-27T22:04:26.008323","2025-08-28T22:04:26.008323","2025-08-29T22:04:26.008323","2025-09-01T22:04:26.008323","2025-09-02T22:04:26.008323","2025-09-03T22:04:26.008323","2025-09-04T22:04:26.008323","2025-09-05T22:04:26.008323","2025-09-08T22:04:26.008323","2025-09-09T22:04:26.008323","2025-09-10T22:04:26.008323","2025-09-11T22:04:26.008323","2025-09-12T22:04:26.008323","2025-09-15T22:04:26.008323","2025-09-16T22:04:26.008323","2025-09-17T22:04:26.008323","2025-09-18T22:04:26.008323","2025-09-19T22:04:26.008323","2025-09-22T22:04:26.008323","2025-09-23T22:04:26.008323","2025-09-24T22:04:26.008323","2025-09-25T22:04:26.008323","2025-09-26T22:04:26.008323","2025-09-29T22:04:26.008323","2025-09-30T22:04:26.008323","2025-10-01T22:04:26.008323","2025-10-02T22:04:26.008323","2025-10-03T22:04:26.008323","2025-10-06T22:04:26.008323","2025-10-07T22:04:26.008323","2025-10-08T22:04:26.008323","2025-10-09T22:04:26.008323","2025-10-10T22:04:26.008323","2025-10-13T22:04:26.008323","2025-10-14T22:04:26.008323","2025-10-15T22:04:26.008323","2025-10-16T22:04:26.008323","2025-10-17T22:04:26.008323","2025-10-20T22:04:26.008323","2025-10-21T22:04:26.008323","2025-10-22T22:04:26.008323","2025-10-23T22:04:26.008323","2025-10-24T22:04:26.008323","2025-10-27T22:04:26.008323","2025-10-28T22:04:26.008323","2025-10-29T22:04:26.008323","2025-10-30T22:04:26.008323","2025-10-31T22:04:26.008323","2025-11-03T22:04:26.008323","2025-11-04T22:04:26.008323","2025-11-05T22:04:26.008323","2025-11-06T22:04:26.008323","2025-11-07T22:04:26.008323","2025-11-10T22:04:26.008323","2025-11-11T22:04:26.008323","2025-11-12T22:04:26.008323","2025-11-13T22:04:26.008323","2025-11-14T22:04:26.008323","2025-11-17T22:04:26.008323","2025-11-18T22:04:26.008323","2025-11-19T22:04:26.008323","2025-11-20T22:04:26.008323","2025-11-21T22:04:26.008323","2025-11-24T22:04:26.008323","2025-11-25T22:04:26.008323","2025-11-26T22:04:26.008323","2025-11-27T22:04:26.008323","2025-11-28T22:04:26.008323","2025-12-01T22:04:26.008323","2025-12-02T22:04:26.008323","2025-12-03T22:04:26.008323","2025-12-04T22:04:26.008323","2025-12-05T22:04:26.008323","2025-12-08T22:04:26.008323"],"y":{"dtype":"f8","bdata":"G4S53csNKECUh4Va0ywoQENznUZaiihAjlcgelL+M0DIemr11Wk0QLjoZKn13i1A8uocA7JXM0B\u002fwAMDCNMyQMvXZfhPjylAC5krg2pDLkDfUWNCzDE4QKj\u002frPnxbzNATmA6rdtoKECzfF2G\u002f6QyQJyiI7n8+zRABHEeTmCiJkBiZwqd1xgxQEg2V81zaDJAzVfJx+7ONEBkPiDQmcw0QPUUOUTc1CZAf6SIDKvUNECWlSaloNMoQNXqq6sC\u002fS9A0VynkZbiM0B8J2a9GHYwQBk74SU49TZA4GOw4lRDK0A9KZMa2vAuQCNpN\u002fqYJzNAz\u002fV9OEgQKEAbf6KyYQ0wQEyL+iR3CDFAFw6EZAFzNUAo1qnyPVM0QBYYsrrVVzNASMMpc\u002fPpM0AHCydp\u002fvwwQPQXesTobTBAclMDzedgOECRgTy7fHcwQCQLmMCt2y1A\u002fFI\u002fbypWMkCsx32rdfIrQIXukjgrwjBAv36IDRaONED8pUV9ko8zQCtM32sIZilAl3K+2HsNPEAD7nn+tNk1QKTk1TkGhC9A0T\u002fBxYqGN0AY7fFCOpAyQKkR+pl6kTJASE+RQ8RxMEATEJNwIfcyQMXiN4WVrjRA3nTLDvFfKECrBIvDmZczQAg6WtWSwjZA\u002fwWCABl6L0Deq1Ym\u002fN40QPZhvVErLDRAB\u002fAWSFB8LkBDxqNUwpMzQC2WIvlKgDJAiCr8Gd5AMEDjqNxELdUxQGzM64hD5ipAIO1\u002fgLVeM0C9N4YA4NgmQDZYOEnzOzhAXaRQFr4yMkBn0TsVcCs0QHC044bfLSdAblLRWPuTJkCJsUy\u002fRHQuQLr1mh4UdC1Arg\u002frjVppM0CJQzaQLj4wQEpCIm3jXzNAUoGTbeBGLUCvXG+bqWQ0QM41zNB4cjFATifZ6nIyK0BbzTrj+7IuQNS2YRQEfzhAvF0vTRHQL0DIDFTGv+MyQP28qUiF9TJA"},"type":"bar","xaxis":"x2","yaxis":"y2"},{"hovertemplate":"%{y:.1f}M\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#404040","width":1},"mode":"lines","name":"20-day Avg","x":["2025-08-05T22:04:26.008323","2025-08-06T22:04:26.008323","2025-08-07T22:04:26.008323","2025-08-08T22:04:26.008323","2025-08-11T22:04:26.008323","2025-08-12T22:04:26.008323","2025-08-13T22:04:26.008323","2025-08-14T22:04:26.008323","2025-08-15T22:04:26.008323","2025-08-18T22:04:26.008323","2025-08-19T22:04:26.008323","2025-08-20T22:04:26.008323","2025-08-21T22:04:26.008323","2025-08-22T22:04:26.008323","2025-08-25T22:04:26.008323","2025-08-26T22:04:26.008323","2025-08-27T22:04:26.008323","2025-08-28T22:04:26.008323","2025-08-29T22:04:26.008323","2025-09-01T22:04:26.008323","2025-09-02T22:04:26.008323","2025-09-03T22:04:26.008323","2025-09-04T22:04:26.008323","2025-09-05T22:04:26.008323","2025-09-08T22:04:26.008323","2025-09-09T22:04:26.008323","2025-09-10T22:04:26.008323","2025-09-11T22:04:26.008323","2025-09-12T22:04:26.008323","2025-09-15T22:04:26.008323","2025-09-16T22:04:26.008323","2025-09-17T22:04:26.008323","2025-09-18T22:04:26.008323","2025-09-19T22:04:26.008323","2025-09-22T22:04:26.008323","2025-09-23T22:04:26.008323","2025-09-24T22:04:26.008323","2025-09-25T22:04:26.008323","2025-09-26T22:04:26.008323","2025-09-29T22:04:26.008323","2025-09-30T22:04:26.008323","2025-10-01T22:04:26.008323","2025-10-02T22:04:26.008323","2025-10-03T22:04:26.008323","2025-10-06T22:04:26.008323","2025-10-07T22:04:26.008323","2025-10-08T22:04:26.008323","2025-10-09T22:04:26.008323","2025-10-10T22:04:26.008323","2025-10-13T22:04:26.008323","2025-10-14T22:04:26.008323","2025-10-15T22:04:26.008323","2025-10-16T22:04:26.008323","2025-10-17T22:04:26.008323","2025-10-20T22:04:26.008323","2025-10-21T22:04:26.008323","2025-10-22T22:04:26.008323","2025-10-23T22:04:26.008323","2025-10-24T22:04:26.008323","2025-10-27T22:04:26.008323","2025-10-28T22:04:26.008323","2025-10-29T22:04:26.008323","2025-10-30T22:04:26.008323","2025-10-31T22:04:26.008323","2025-11-03T22:04:26.008323","2025-11-04T22:04:26.008323","2025-11-05T22:04:26.008323","2025-11-06T22:04:26.008323","2025-11-07T22:04:26.008323","2025-11-10T22:04:26.008323","2025-11-11T22:04:26.008323","2025-11-12T22:04:26.008323","2025-11-13T22:04:26.008323","2025-11-14T22:04:26.008323","2025-11-17T22:04:26.008323","2025-11-18T22:04:26.008323","2025-11-19T22:04:26.008323","2025-11-20T22:04:26.008323","2025-11-21T22:04:26.008323","2025-11-24T22:04:26.008323","2025-11-25T22:04:26.008323","2025-11-26T22:04:26.008323","2025-11-27T22:04:26.008323","2025-11-28T22:04:26.008323","2025-12-01T22:04:26.008323","2025-12-02T22:04:26.008323","2025-12-03T22:04:26.008323","2025-12-04T22:04:26.008323","2025-12-05T22:04:26.008323","2025-12-08T22:04:26.008323"],"y":{"dtype":"f8","bdata":"DZDDu7dbMUBHXFvTFx4xQINkpllFuDBApRMJppoXMUAIXLKFe1YxQMD6LluhTjFA7oYj\u002fhd7MUDU4kLUM2kxQPwL89TZIDFA6TjINU\u002fzMEDzvjtDgiwxQIfvs4C\u002f7jBADpzY6EFZMEBtuxrqwZIwQCYOj7OfyDBActZMYyCYMEB3z8tyI3swQO\u002fCe7NyWjBAW4F8ZM7EMEDFsvT8xBUxQDDjtzLyDTFABsjh3dt9MUB7AnLTsH8xQPrjB\u002fh\u002fTDFA4YikzLxFMUA8uOCxRFkxQHLv0GaLhzFA6sHuhRNFMUCNfcnGg2cxQC+S0VwCmzFA1Y0cjlP\u002fMECbOo+K\u002f9MwQPdLes7METFAbgbJTLM1MUCcInZcQy0xQDAUC9f+kzFALz8mCA24MUCf1iPD4KUxQDrgX6nTbTFA4TprXKSbMUAJ1Kx9S9wxQEr\u002f3OHAkDFAf8wYMJLcMUA4pRcQtcIxQOfSCbKvmjFAeIoL9hXPMUBpKWp6mqMxQNKIPsSrlzFAHsdqTrk4MkAqtAe1OlsyQCIa3UHsijJAKwoFtpTqMkCoaFFEK\u002f4yQAocZO1K2TJA5K5vcZ6nMkCyIe6gyKIyQESjO4idrDJAo8W+CSpvMkBGnn8WppcyQM4pt6PugjJA4MldOpx5MkCXuETkqsUyQPDSl+8q3TJAWNpOAGrtMkDvsU9bfhEzQBsz5DM09zJAiIYgYt7MMkB5k9+ikw4zQHSMdbuoUzJANtn1wegzMkCwQbozbvwxQOgCTTqABTJArCV4ntMAMkDbCNUXUxUyQJrcOd4u1zFAEPFqFO10MUDDQ72FGi8xQMhzImabTzFAvNpAcEtNMUDPdGUG4PkwQPm3cMVqKDFA0EVDxqPYMEDzK4zjdtswQNabYh+u9zBAG6ZsRyerMEDvlj860IIwQFlEXiBS7DBA2DdB5anTMEAtIFllSxkxQCsEKPwIFDFA"},"type":"scatter","xaxis":"x2","yaxis":"y2"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"matches":"x2","showticklabels":false,"tickfont":{"size":10},"showgrid":true,"gridcolor":"#F5F5F5","gridwidth":1,"linecolor":"#CCCCCC","linewidth":1},"yaxis":{"anchor":"x","domain":[0.32099999999999995,0.9999999999999999],"tickfont":{"size":10},"showgrid":true,"gridcolor":"#F5F5F5","gridwidth":1,"linecolor":"#CCCCCC","linewidth":1,"title":{"text":"Price ($)"}},"xaxis2":{"anchor":"y2","domain":[0.0,1.0]},"yaxis2":{"anchor":"x2","domain":[0.0,0.291],"title":{"text":"Volume (M)"}},"annotations":[{"font":{"size":16},"showarrow":false,"text":"Volume (M)","x":0.5,"xanchor":"center","xref":"paper","y":0.291,"yanchor":"bottom","yref":"paper"}],"title":{"font":{"size":16,"color":"#003366","family":"Helvetica Neue, Arial, sans-serif"},"text":"ORCL - Price & Volume Analysis","x":0,"xanchor":"left"},"font":{"family":"Helvetica Neue, Arial, sans-serif","size":11,"color":"#404040"},"margin":{"l":60,"r":40,"t":60,"b":60},"legend":{"orientation":"h","yanchor":"bottom","y":1.02,"xanchor":"right","x":1,"bgcolor":"rgba(255,255,255,0.8)","bordercolor":"#CCCCCC","borderwidth":1},"plot_bgcolor":"#FFFFFF","paper_bgcolor":"#FFFFFF","hovermode":"x unified"},                        {"displayModeBar": true, "modeBarButtonsToRemove": ["lasso2d", "select2d"], "displaylogo": false, "responsive": true}                    )                };            </script>        </div></div>
+            <p class="chart-caption">Daily closing price with 50-day and 200-day moving averages. Volume bars show buying (green) vs selling (red) pressure.</p>
+        </div>
+
+        <div class="chart-container">
+            <h3>Candlestick with Bollinger Bands</h3>
+            <div class="chart-wrapper"><div>                            <div id="30702706-55f2-400e-a150-63571fa38a7e" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("30702706-55f2-400e-a150-63571fa38a7e")) {                    Plotly.newPlot(                        "30702706-55f2-400e-a150-63571fa38a7e",                        [{"close":{"dtype":"f8","bdata":"16NwPQoXaUB7FK5H4cJpQM3MzMzMfGlApHA9CtfLaUApXI\u002fC9bhpQFyPwvUopGlAFK5H4Xo8akDsUbgehbNqQDMzMzMzK2tA4XoUrkfpa0CF61G4HvVrQI\u002fC9ShcX2xA7FG4HoU7bEAzMzMzM3NsQJqZmZmZaWxAcT0K16OAbEBxPQrXo+BsQOF6FK5HcWxAMzMzMzOrbUBcj8L1KBxtQHE9CtejcGxAexSuR+EibUDD9Shcj6JtQDMzMzMzC25A9ihcj8J1bkCuR+F6FH5uQBSuR+F6\u002fG1ACtejcD0SbkBcj8L1KLRtQMP1KFyPUm5ArkfhehRGbkBxPQrXo9BtQFK4HoXrqW1AexSuR+HybUDXo3A9CqdtQBSuR+F6NG1AMzMzMzNjbUAK16NwPZJtQAAAAAAAUG1ApHA9CtcTbUBxPQrXo0BtQArXo3A9cmxASOF6FK6va0CkcD0K11NrQAAAAAAAQGtAhetRuB51a0AfhetRuE5sQD0K16Nw1WxAuB6F61HIbEC4HoXrUdBsQNejcD0KR2xAH4XrUbhObEBI4XoUri9sQHE9CtejaGxAMzMzMzP7a0AAAAAAAFBsQClcj8L1OG1ApHA9CtczbUAzMzMzM3ttQB+F61G47m1A"},"decreasing":{"line":{"color":"#E06055"}},"high":{"dtype":"f8","bdata":"AAAAAAA4aUAzMzMzM9tpQJqZmZmZ8WlA16NwPQrnaUAzMzMzMxtqQB+F61G49mlA9ihcj8JtakAAAAAAAMhqQOF6FK5HiWtAhetRuB71a0CuR+F6FD5sQArXo3A9qmxArkfhehQ+bECuR+F6FAZtQNejcD0Kp2xAmpmZmZm5bEAAAAAAAOhtQHsUrkfh+mxAexSuR+HKbUAUrkfheoRtQClcj8L1AG1A9ihcj8JtbUCuR+F6FNZtQKRwPQrXM25AuB6F61HwbkC4HoXrUehuQDMzMzMzc25ACtejcD16bkAzMzMzM1NuQD0K16NwdW5A9ihcj8JNbkCPwvUoXEduQK5H4XoU\u002fm1AFK5H4XoEbkBxPQrXozhuQClcj8L1uG1A16NwPQqPbUD2KFyPwjVuQAAAAAAA0G1AZmZmZmZ+bUA9CtejcIVtQClcj8L1cG1AuB6F61GYbEC4HoXrUchrQArXo3A9emtAcT0K16OYa0DXo3A9CvdsQJqZmZmZ6WxA16NwPQrnbECkcD0K1wttQB+F61G4\u002fmxAj8L1KFzPbEB7FK5H4bJsQOxRuB6Fi2xAMzMzMzOjbECPwvUoXJ9sQNejcD0Kl21AH4XrUbiGbUAUrkfhepRtQB+F61G4Fm5A"},"increasing":{"line":{"color":"#2ECC71"}},"low":{"dtype":"f8","bdata":"16NwPQr3aECPwvUoXCdpQBSuR+F6bGlAmpmZmZlpaUCkcD0K1zNpQI\u002fC9ShcX2lAj8L1KFyfaUCkcD0K1xNqQDMzMzMzs2pAFK5H4XoMa0CamZmZmZlrQLgehetRyGtAFK5H4Xo0bEBSuB6F6\u002flrQM3MzMzMVGxAmpmZmZlBbEC4HoXrUchrQOxRuB6FG2xAPQrXo3BdbEAzMzMzM9tsQOxRuB6FI2xAuB6F61FobEAzMzMzM0NtQHsUrkfhgm1A4XoUrkfRbUDD9Shcj+ptQMP1KFyPom1ArkfhehSObUDD9Shcj5ptQHE9CtejsG1AUrgehesZbkAfhetRuJZtQJqZmZmZMW1AUrgehet5bUBSuB6F61ltQM3MzMzM7GxAcT0K16P4bEA9CtejcD1tQJqZmZmZ2WxAFK5H4XrEbEBI4XoUrv9sQOF6FK5HGWxArkfhehRua0B7FK5H4UJrQHsUrkfhGmtAhetRuB4ta0DD9Shcj6JrQOF6FK5HWWxAAAAAAAC4bED2KFyPwp1sQIXrUbgeBWxArkfhehSGa0CamZmZmcFrQPYoXI\u002fC7WtApHA9Ctfba0BSuB6F69FrQD0K16NwJWxAZmZmZmbebEBcj8L1KPRsQDMzMzMze21A"},"name":"OHLC","open":{"dtype":"f8","bdata":"PQrXo3AFaUBSuB6F6ylpQAAAAAAA8GlAcT0K16OIaUAzMzMzM9tpQPYoXI\u002fCpWlAXI\u002fC9Si0aUBcj8L1KBRqQLgehetRyGpACtejcD0aa0C4HoXrURhsQEjhehSu32tAzczMzMw8bEAzMzMzM4NsQM3MzMzMlGxAXI\u002fC9ShEbEAAAAAAAIhsQLgehetR8GxAj8L1KFxfbEBcj8L1KIRtQOF6FK5H8WxA9ihcj8KFbEBI4XoUrldtQM3MzMzMjG1AzczMzMzkbUAUrkfhepxuQK5H4XoUZm5AuB6F61EgbkB7FK5H4TJuQD0K16NwxW1AKVyPwvU4bkAzMzMzMztuQAAAAAAA6G1AmpmZmZmRbUD2KFyPwi1uQHE9CtejoG1AexSuR+ECbUCuR+F6FGZtQI\u002fC9Shcb21AAAAAAAAgbUCamZmZmQltQB+F61G4Zm1AH4XrUbh+bEAfhetRuKZrQAAAAAAAMGtAZmZmZmZGa0D2KFyPwqVrQDMzMzMzY2xAexSuR+G6bEApXI\u002fC9dhsQClcj8L18GxA4XoUrkdRbEAAAAAAAGhsQEjhehSu72tAhetRuB6dbECuR+F6FNZrQArXo3A9MmxAH4XrUbhebUBcj8L1KBRtQOF6FK5HgW1A"},"x":["2025-09-16T22:04:26.008323","2025-09-17T22:04:26.008323","2025-09-18T22:04:26.008323","2025-09-19T22:04:26.008323","2025-09-22T22:04:26.008323","2025-09-23T22:04:26.008323","2025-09-24T22:04:26.008323","2025-09-25T22:04:26.008323","2025-09-26T22:04:26.008323","2025-09-29T22:04:26.008323","2025-09-30T22:04:26.008323","2025-10-01T22:04:26.008323","2025-10-02T22:04:26.008323","2025-10-03T22:04:26.008323","2025-10-06T22:04:26.008323","2025-10-07T22:04:26.008323","2025-10-08T22:04:26.008323","2025-10-09T22:04:26.008323","2025-10-10T22:04:26.008323","2025-10-13T22:04:26.008323","2025-10-14T22:04:26.008323","2025-10-15T22:04:26.008323","2025-10-16T22:04:26.008323","2025-10-17T22:04:26.008323","2025-10-20T22:04:26.008323","2025-10-21T22:04:26.008323","2025-10-22T22:04:26.008323","2025-10-23T22:04:26.008323","2025-10-24T22:04:26.008323","2025-10-27T22:04:26.008323","2025-10-28T22:04:26.008323","2025-10-29T22:04:26.008323","2025-10-30T22:04:26.008323","2025-10-31T22:04:26.008323","2025-11-03T22:04:26.008323","2025-11-04T22:04:26.008323","2025-11-05T22:04:26.008323","2025-11-06T22:04:26.008323","2025-11-07T22:04:26.008323","2025-11-10T22:04:26.008323","2025-11-11T22:04:26.008323","2025-11-12T22:04:26.008323","2025-11-13T22:04:26.008323","2025-11-14T22:04:26.008323","2025-11-17T22:04:26.008323","2025-11-18T22:04:26.008323","2025-11-19T22:04:26.008323","2025-11-20T22:04:26.008323","2025-11-21T22:04:26.008323","2025-11-24T22:04:26.008323","2025-11-25T22:04:26.008323","2025-11-26T22:04:26.008323","2025-11-27T22:04:26.008323","2025-11-28T22:04:26.008323","2025-12-01T22:04:26.008323","2025-12-02T22:04:26.008323","2025-12-03T22:04:26.008323","2025-12-04T22:04:26.008323","2025-12-05T22:04:26.008323","2025-12-08T22:04:26.008323"],"type":"candlestick"},{"hovertemplate":"$%{y:.2f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#CCCCCC","width":1},"mode":"lines","name":"Upper Band","x":["2025-09-16T22:04:26.008323","2025-09-17T22:04:26.008323","2025-09-18T22:04:26.008323","2025-09-19T22:04:26.008323","2025-09-22T22:04:26.008323","2025-09-23T22:04:26.008323","2025-09-24T22:04:26.008323","2025-09-25T22:04:26.008323","2025-09-26T22:04:26.008323","2025-09-29T22:04:26.008323","2025-09-30T22:04:26.008323","2025-10-01T22:04:26.008323","2025-10-02T22:04:26.008323","2025-10-03T22:04:26.008323","2025-10-06T22:04:26.008323","2025-10-07T22:04:26.008323","2025-10-08T22:04:26.008323","2025-10-09T22:04:26.008323","2025-10-10T22:04:26.008323","2025-10-13T22:04:26.008323","2025-10-14T22:04:26.008323","2025-10-15T22:04:26.008323","2025-10-16T22:04:26.008323","2025-10-17T22:04:26.008323","2025-10-20T22:04:26.008323","2025-10-21T22:04:26.008323","2025-10-22T22:04:26.008323","2025-10-23T22:04:26.008323","2025-10-24T22:04:26.008323","2025-10-27T22:04:26.008323","2025-10-28T22:04:26.008323","2025-10-29T22:04:26.008323","2025-10-30T22:04:26.008323","2025-10-31T22:04:26.008323","2025-11-03T22:04:26.008323","2025-11-04T22:04:26.008323","2025-11-05T22:04:26.008323","2025-11-06T22:04:26.008323","2025-11-07T22:04:26.008323","2025-11-10T22:04:26.008323","2025-11-11T22:04:26.008323","2025-11-12T22:04:26.008323","2025-11-13T22:04:26.008323","2025-11-14T22:04:26.008323","2025-11-17T22:04:26.008323","2025-11-18T22:04:26.008323","2025-11-19T22:04:26.008323","2025-11-20T22:04:26.008323","2025-11-21T22:04:26.008323","2025-11-24T22:04:26.008323","2025-11-25T22:04:26.008323","2025-11-26T22:04:26.008323","2025-11-27T22:04:26.008323","2025-11-28T22:04:26.008323","2025-12-01T22:04:26.008323","2025-12-02T22:04:26.008323","2025-12-03T22:04:26.008323","2025-12-04T22:04:26.008323","2025-12-05T22:04:26.008323","2025-12-08T22:04:26.008323"],"y":{"dtype":"f8","bdata":"DMhqjT5LaUDbk1\u002fSrZRpQHoQVAeTwmlAvRvcoAb8aUB6hUXBnydqQEd5zFcxR2pASEv4H+V5akC8YIITtLNqQFOi7d8HCWtA3YQBmzeEa0C0oUCKI99rQPJhjQOBS2xAVLAv6K2cbEADM598uvFsQGaAOLfdOm1AVFp6kn50bUAsI3msRqptQGyxanPaxW1Aqx+gv54ZbkAMIH4ohD1uQLYGgekdO25ApHJJYQBabkCj7jk9DnluQP3oOZvCpW5AhH3Y5ejRbkCiKKnC8uBuQJBXK\u002fky2W5AFuJ2TSPWbkCKm6id08huQBRy0paz5G5AU9A0Bmr2bkDdpp8Mm\u002ftuQJ5vWHwo9W5AlN77cdv2bkCRhsapyetuQDq6FPWE3W5AzPKIvebXbkDyePsKyL9uQNwipnmDv25AKg+1XiPAbkDWkMq2TKJuQCJUshgmvm5A7le2lmT9bkCiG9YYQi1vQAaLzCTjOG9ArQ7KW98ob0DDj+phjRJvQBxSvrQ09W5AQc8\u002fkyzjbkAlk8n+XrRuQPZKMQjegG5Ac5F\u002fIjZfbkDc3qpM0EBuQOmjGfa\u002fDm5AWYKb0dPnbUCtESCTedJtQB3xnHW\u002fym1AAuTp5a23bUBQ6hCblcBtQN38XX1w7m1A"},"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(204, 204, 204, 0.2)","hovertemplate":"$%{y:.2f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#CCCCCC","width":1},"mode":"lines","name":"Lower Band","x":["2025-09-16T22:04:26.008323","2025-09-17T22:04:26.008323","2025-09-18T22:04:26.008323","2025-09-19T22:04:26.008323","2025-09-22T22:04:26.008323","2025-09-23T22:04:26.008323","2025-09-24T22:04:26.008323","2025-09-25T22:04:26.008323","2025-09-26T22:04:26.008323","2025-09-29T22:04:26.008323","2025-09-30T22:04:26.008323","2025-10-01T22:04:26.008323","2025-10-02T22:04:26.008323","2025-10-03T22:04:26.008323","2025-10-06T22:04:26.008323","2025-10-07T22:04:26.008323","2025-10-08T22:04:26.008323","2025-10-09T22:04:26.008323","2025-10-10T22:04:26.008323","2025-10-13T22:04:26.008323","2025-10-14T22:04:26.008323","2025-10-15T22:04:26.008323","2025-10-16T22:04:26.008323","2025-10-17T22:04:26.008323","2025-10-20T22:04:26.008323","2025-10-21T22:04:26.008323","2025-10-22T22:04:26.008323","2025-10-23T22:04:26.008323","2025-10-24T22:04:26.008323","2025-10-27T22:04:26.008323","2025-10-28T22:04:26.008323","2025-10-29T22:04:26.008323","2025-10-30T22:04:26.008323","2025-10-31T22:04:26.008323","2025-11-03T22:04:26.008323","2025-11-04T22:04:26.008323","2025-11-05T22:04:26.008323","2025-11-06T22:04:26.008323","2025-11-07T22:04:26.008323","2025-11-10T22:04:26.008323","2025-11-11T22:04:26.008323","2025-11-12T22:04:26.008323","2025-11-13T22:04:26.008323","2025-11-14T22:04:26.008323","2025-11-17T22:04:26.008323","2025-11-18T22:04:26.008323","2025-11-19T22:04:26.008323","2025-11-20T22:04:26.008323","2025-11-21T22:04:26.008323","2025-11-24T22:04:26.008323","2025-11-25T22:04:26.008323","2025-11-26T22:04:26.008323","2025-11-27T22:04:26.008323","2025-11-28T22:04:26.008323","2025-12-01T22:04:26.008323","2025-12-02T22:04:26.008323","2025-12-03T22:04:26.008323","2025-12-04T22:04:26.008323","2025-12-05T22:04:26.008323","2025-12-08T22:04:26.008323"],"y":{"dtype":"f8","bdata":"Wp772CfzZkBZn9NgheJmQO6AmXWs3mZAC1vi\u002fhPTZkA0wpu5dNpmQP08J6aj7WZAnFqjpDsCZ0DA3rJKBiJnQLPep2ODJ2dAb7KHpigVZ0AGqMt3ByxnQP5wwF6PMGdAXMI4qT9IZ0DzIEQp4VZnQEAbjGnSZ2dA4i7HzWaUZ0Awl9Bfu9RnQJROlYwlGmhAYQ0S3lA+aEAA4qxekoNoQE4kBi2722hAxh6kGz8TaUDhpglOXl5pQF2miFpmnmlAuIz+vYfraUByWhcIr1hqQIQrldFuwGpAfmEUH8QZa0BCMSQv+WdrQDaaL5TTiWtAkyt162iza0C5x3J2JdNrQGw8xN07\u002fmtAYkpgHecibECbVl5ct01sQDqufPj3bWxAOo4MhqSAbEBKkduYqLVsQN773nHOrGxASlncjlmrbEBqpJMD\u002fd1sQJJ0xKV5sGxA7KHI01c\u002fbECSF10a8clrQBSkEAAjbGtAacoEnHQua0BxeMG6zBlrQM7UclN3F2tAyzLr8+kRa0A1purJFxprQJp3xCB+GmtA41EmeY4Va0CQCFFdIQ5rQAGunijFGGtAgXfjmOgUa0AtvdfAaRNrQG17SobqFmtASn4mcosga0C2loSo9RtrQANTLxr+A2tA"},"type":"scatter"},{"hovertemplate":"$%{y:.2f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#00A3A1","dash":"dot","width":1},"mode":"lines","name":"20-day SMA","x":["2025-09-16T22:04:26.008323","2025-09-17T22:04:26.008323","2025-09-18T22:04:26.008323","2025-09-19T22:04:26.008323","2025-09-22T22:04:26.008323","2025-09-23T22:04:26.008323","2025-09-24T22:04:26.008323","2025-09-25T22:04:26.008323","2025-09-26T22:04:26.008323","2025-09-29T22:04:26.008323","2025-09-30T22:04:26.008323","2025-10-01T22:04:26.008323","2025-10-02T22:04:26.008323","2025-10-03T22:04:26.008323","2025-10-06T22:04:26.008323","2025-10-07T22:04:26.008323","2025-10-08T22:04:26.008323","2025-10-09T22:04:26.008323","2025-10-10T22:04:26.008323","2025-10-13T22:04:26.008323","2025-10-14T22:04:26.008323","2025-10-15T22:04:26.008323","2025-10-16T22:04:26.008323","2025-10-17T22:04:26.008323","2025-10-20T22:04:26.008323","2025-10-21T22:04:26.008323","2025-10-22T22:04:26.008323","2025-10-23T22:04:26.008323","2025-10-24T22:04:26.008323","2025-10-27T22:04:26.008323","2025-10-28T22:04:26.008323","2025-10-29T22:04:26.008323","2025-10-30T22:04:26.008323","2025-10-31T22:04:26.008323","2025-11-03T22:04:26.008323","2025-11-04T22:04:26.008323","2025-11-05T22:04:26.008323","2025-11-06T22:04:26.008323","2025-11-07T22:04:26.008323","2025-11-10T22:04:26.008323","2025-11-11T22:04:26.008323","2025-11-12T22:04:26.008323","2025-11-13T22:04:26.008323","2025-11-14T22:04:26.008323","2025-11-17T22:04:26.008323","2025-11-18T22:04:26.008323","2025-11-19T22:04:26.008323","2025-11-20T22:04:26.008323","2025-11-21T22:04:26.008323","2025-11-24T22:04:26.008323","2025-11-25T22:04:26.008323","2025-11-26T22:04:26.008323","2025-11-27T22:04:26.008323","2025-11-28T22:04:26.008323","2025-12-01T22:04:26.008323","2025-12-02T22:04:26.008323","2025-12-03T22:04:26.008323","2025-12-04T22:04:26.008323","2025-12-05T22:04:26.008323","2025-12-08T22:04:26.008323"],"y":{"dtype":"f8","bdata":"MzMzMzMfaECamZmZmTtoQLTIdr6fUGhAZDvfT41naEDXo3A9CoFoQCLb+X5qmmhA8tJNYhC+aEC+nxov3epoQIPAyqFFGGlAppvEILBMaUDdJAaBlYVpQHjpJjEIvmlAWDm0yHbyaUD7qfHSTSRqQNNNYhBYUWpAm8QgsHKEakAu3SQGgb9qQAAAAAAA8GpAhhbZzvcra0AGgZVDi2BrQIKVQ4tsi2tAtch2vp+2a0DCyqFFtutrQK1H4XoUImxAHoXrUbhebECKQWDl0JxsQIpBYOXQzGxAyqFFtvP3bEBmZmZmZhhtQCUGgZVDN21A8\u002f3UeOlUbUBLN4lBYGdtQAVWDi2yeW1AexSuR+GMbUCWbhKDwJxtQDq0yHa+pW1Ag8DKoUWsbUAehetRuLptQF2PwvUotm1AOrTIdr61bUCgGi\u002fdJMBtQFpkO99Pt21A7Xw\u002fNV6ebUCamZmZmXttQI2XbhKDUm1Ai2zn+6krbUAaBFYOLRZtQHWTGARWBm1ABoGVQ4v6bECtHFpkO+dsQEjhehSuzWxAq\u002fHSTWK6bEC28\u002f3UeKdsQPUoXI\u002fCk2xA7Xw\u002fNV5+bEBt5\u002fup8XJsQEW28\u002f3UcGxAJjEIrBxsbECDwMqhRW5sQPCnxks3eWxA"},"type":"scatter"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"title":{"font":{"size":16,"color":"#003366","family":"Helvetica Neue, Arial, sans-serif"},"text":"ORCL - Candlestick with Bollinger Bands","x":0,"xanchor":"left"},"font":{"family":"Helvetica Neue, Arial, sans-serif","size":11,"color":"#404040"},"margin":{"l":60,"r":40,"t":60,"b":60},"legend":{"orientation":"h","yanchor":"bottom","y":1.02,"xanchor":"right","x":1,"bgcolor":"rgba(255,255,255,0.8)","bordercolor":"#CCCCCC","borderwidth":1},"xaxis":{"tickfont":{"size":10},"showgrid":true,"gridcolor":"#F5F5F5","gridwidth":1,"linecolor":"#CCCCCC","linewidth":1,"rangeslider":{"visible":false}},"yaxis":{"tickfont":{"size":10},"showgrid":true,"gridcolor":"#F5F5F5","gridwidth":1,"linecolor":"#CCCCCC","linewidth":1,"title":{"text":"Price ($)"}},"plot_bgcolor":"#FFFFFF","paper_bgcolor":"#FFFFFF","hovermode":"x unified"},                        {"displayModeBar": true, "modeBarButtonsToRemove": ["lasso2d", "select2d"], "displaylogo": false, "responsive": true}                    )                };            </script>        </div></div>
+            <p class="chart-caption">OHLC candlestick pattern with Bollinger Bands (20-period, 2 std dev). Price near upper band suggests overbought, near lower suggests oversold.</p>
+        </div>
+
+        <div class="chart-container">
+            <h3>Technical Indicators Dashboard</h3>
+            <div class="chart-wrapper"><div>                            <div id="d9a86ec4-334e-4e6b-bbb5-d229f8837608" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("d9a86ec4-334e-4e6b-bbb5-d229f8837608")) {                    Plotly.newPlot(                        "d9a86ec4-334e-4e6b-bbb5-d229f8837608",                        [{"line":{"color":"#003366","width":2},"mode":"lines","name":"Price","x":["2025-08-05T22:04:26.008323","2025-08-06T22:04:26.008323","2025-08-07T22:04:26.008323","2025-08-08T22:04:26.008323","2025-08-11T22:04:26.008323","2025-08-12T22:04:26.008323","2025-08-13T22:04:26.008323","2025-08-14T22:04:26.008323","2025-08-15T22:04:26.008323","2025-08-18T22:04:26.008323","2025-08-19T22:04:26.008323","2025-08-20T22:04:26.008323","2025-08-21T22:04:26.008323","2025-08-22T22:04:26.008323","2025-08-25T22:04:26.008323","2025-08-26T22:04:26.008323","2025-08-27T22:04:26.008323","2025-08-28T22:04:26.008323","2025-08-29T22:04:26.008323","2025-09-01T22:04:26.008323","2025-09-02T22:04:26.008323","2025-09-03T22:04:26.008323","2025-09-04T22:04:26.008323","2025-09-05T22:04:26.008323","2025-09-08T22:04:26.008323","2025-09-09T22:04:26.008323","2025-09-10T22:04:26.008323","2025-09-11T22:04:26.008323","2025-09-12T22:04:26.008323","2025-09-15T22:04:26.008323","2025-09-16T22:04:26.008323","2025-09-17T22:04:26.008323","2025-09-18T22:04:26.008323","2025-09-19T22:04:26.008323","2025-09-22T22:04:26.008323","2025-09-23T22:04:26.008323","2025-09-24T22:04:26.008323","2025-09-25T22:04:26.008323","2025-09-26T22:04:26.008323","2025-09-29T22:04:26.008323","2025-09-30T22:04:26.008323","2025-10-01T22:04:26.008323","2025-10-02T22:04:26.008323","2025-10-03T22:04:26.008323","2025-10-06T22:04:26.008323","2025-10-07T22:04:26.008323","2025-10-08T22:04:26.008323","2025-10-09T22:04:26.008323","2025-10-10T22:04:26.008323","2025-10-13T22:04:26.008323","2025-10-14T22:04:26.008323","2025-10-15T22:04:26.008323","2025-10-16T22:04:26.008323","2025-10-17T22:04:26.008323","2025-10-20T22:04:26.008323","2025-10-21T22:04:26.008323","2025-10-22T22:04:26.008323","2025-10-23T22:04:26.008323","2025-10-24T22:04:26.008323","2025-10-27T22:04:26.008323","2025-10-28T22:04:26.008323","2025-10-29T22:04:26.008323","2025-10-30T22:04:26.008323","2025-10-31T22:04:26.008323","2025-11-03T22:04:26.008323","2025-11-04T22:04:26.008323","2025-11-05T22:04:26.008323","2025-11-06T22:04:26.008323","2025-11-07T22:04:26.008323","2025-11-10T22:04:26.008323","2025-11-11T22:04:26.008323","2025-11-12T22:04:26.008323","2025-11-13T22:04:26.008323","2025-11-14T22:04:26.008323","2025-11-17T22:04:26.008323","2025-11-18T22:04:26.008323","2025-11-19T22:04:26.008323","2025-11-20T22:04:26.008323","2025-11-21T22:04:26.008323","2025-11-24T22:04:26.008323","2025-11-25T22:04:26.008323","2025-11-26T22:04:26.008323","2025-11-27T22:04:26.008323","2025-11-28T22:04:26.008323","2025-12-01T22:04:26.008323","2025-12-02T22:04:26.008323","2025-12-03T22:04:26.008323","2025-12-04T22:04:26.008323","2025-12-05T22:04:26.008323","2025-12-08T22:04:26.008323"],"y":{"dtype":"f8","bdata":"CtejcD0iZ0BI4XoUrj9nQGZmZmZm\u002fmZAFK5H4XoMZ0CF61G4HuVmQHE9Ctej+GZAzczMzMxMZ0AAAAAAABBoQK5H4XoUfmdAhetRuB6FaEAfhetRuJZnQHsUrkfhimdAuB6F61HYZ0DhehSuRwFoQDMzMzMzu2dAcT0K16OoZ0DsUbgehXNnQOxRuB6FM2dA16NwPQqfZ0ApXI\u002fC9dBnQDMzMzMzg2dAZmZmZmb2Z0B7FK5H4SJoQGZmZmZmjmhAzczMzMzkaEDD9Shcj4JoQOxRuB6FQ2hAj8L1KFynaECkcD0K1\u002ftoQHE9CtejAGlA16NwPQoXaUB7FK5H4cJpQM3MzMzMfGlApHA9CtfLaUApXI\u002fC9bhpQFyPwvUopGlAFK5H4Xo8akDsUbgehbNqQDMzMzMzK2tA4XoUrkfpa0CF61G4HvVrQI\u002fC9ShcX2xA7FG4HoU7bEAzMzMzM3NsQJqZmZmZaWxAcT0K16OAbEBxPQrXo+BsQOF6FK5HcWxAMzMzMzOrbUBcj8L1KBxtQHE9CtejcGxAexSuR+EibUDD9Shcj6JtQDMzMzMzC25A9ihcj8J1bkCuR+F6FH5uQBSuR+F6\u002fG1ACtejcD0SbkBcj8L1KLRtQMP1KFyPUm5ArkfhehRGbkBxPQrXo9BtQFK4HoXrqW1AexSuR+HybUDXo3A9CqdtQBSuR+F6NG1AMzMzMzNjbUAK16NwPZJtQAAAAAAAUG1ApHA9CtcTbUBxPQrXo0BtQArXo3A9cmxASOF6FK6va0CkcD0K11NrQAAAAAAAQGtAhetRuB51a0AfhetRuE5sQD0K16Nw1WxAuB6F61HIbEC4HoXrUdBsQNejcD0KR2xAH4XrUbhObEBI4XoUri9sQHE9CtejaGxAMzMzMzP7a0AAAAAAAFBsQClcj8L1OG1ApHA9CtczbUAzMzMzM3ttQB+F61G47m1A"},"type":"scatter","xaxis":"x","yaxis":"y"},{"line":{"color":"#00A3A1","width":1.5},"mode":"lines","name":"RSI","x":["2025-08-05T22:04:26.008323","2025-08-06T22:04:26.008323","2025-08-07T22:04:26.008323","2025-08-08T22:04:26.008323","2025-08-11T22:04:26.008323","2025-08-12T22:04:26.008323","2025-08-13T22:04:26.008323","2025-08-14T22:04:26.008323","2025-08-15T22:04:26.008323","2025-08-18T22:04:26.008323","2025-08-19T22:04:26.008323","2025-08-20T22:04:26.008323","2025-08-21T22:04:26.008323","2025-08-22T22:04:26.008323","2025-08-25T22:04:26.008323","2025-08-26T22:04:26.008323","2025-08-27T22:04:26.008323","2025-08-28T22:04:26.008323","2025-08-29T22:04:26.008323","2025-09-01T22:04:26.008323","2025-09-02T22:04:26.008323","2025-09-03T22:04:26.008323","2025-09-04T22:04:26.008323","2025-09-05T22:04:26.008323","2025-09-08T22:04:26.008323","2025-09-09T22:04:26.008323","2025-09-10T22:04:26.008323","2025-09-11T22:04:26.008323","2025-09-12T22:04:26.008323","2025-09-15T22:04:26.008323","2025-09-16T22:04:26.008323","2025-09-17T22:04:26.008323","2025-09-18T22:04:26.008323","2025-09-19T22:04:26.008323","2025-09-22T22:04:26.008323","2025-09-23T22:04:26.008323","2025-09-24T22:04:26.008323","2025-09-25T22:04:26.008323","2025-09-26T22:04:26.008323","2025-09-29T22:04:26.008323","2025-09-30T22:04:26.008323","2025-10-01T22:04:26.008323","2025-10-02T22:04:26.008323","2025-10-03T22:04:26.008323","2025-10-06T22:04:26.008323","2025-10-07T22:04:26.008323","2025-10-08T22:04:26.008323","2025-10-09T22:04:26.008323","2025-10-10T22:04:26.008323","2025-10-13T22:04:26.008323","2025-10-14T22:04:26.008323","2025-10-15T22:04:26.008323","2025-10-16T22:04:26.008323","2025-10-17T22:04:26.008323","2025-10-20T22:04:26.008323","2025-10-21T22:04:26.008323","2025-10-22T22:04:26.008323","2025-10-23T22:04:26.008323","2025-10-24T22:04:26.008323","2025-10-27T22:04:26.008323","2025-10-28T22:04:26.008323","2025-10-29T22:04:26.008323","2025-10-30T22:04:26.008323","2025-10-31T22:04:26.008323","2025-11-03T22:04:26.008323","2025-11-04T22:04:26.008323","2025-11-05T22:04:26.008323","2025-11-06T22:04:26.008323","2025-11-07T22:04:26.008323","2025-11-10T22:04:26.008323","2025-11-11T22:04:26.008323","2025-11-12T22:04:26.008323","2025-11-13T22:04:26.008323","2025-11-14T22:04:26.008323","2025-11-17T22:04:26.008323","2025-11-18T22:04:26.008323","2025-11-19T22:04:26.008323","2025-11-20T22:04:26.008323","2025-11-21T22:04:26.008323","2025-11-24T22:04:26.008323","2025-11-25T22:04:26.008323","2025-11-26T22:04:26.008323","2025-11-27T22:04:26.008323","2025-11-28T22:04:26.008323","2025-12-01T22:04:26.008323","2025-12-02T22:04:26.008323","2025-12-03T22:04:26.008323","2025-12-04T22:04:26.008323","2025-12-05T22:04:26.008323","2025-12-08T22:04:26.008323"],"y":{"dtype":"f8","bdata":"VHZfAZW0QEALzDniPVxGQIK7oj+zQUdA5tXB3Nf1R0Aa7M5ktPhJQGtAMa3A\u002fEVAFN66VlsiTEBgSLSF8IZQQBcTVlb860xAi0wdEDxUTkC3n6kw6MhMQOqd5pDwLkpAsks2s75rS0BwP\u002fO3tYJOQLb81dMa9EtAkg+J9ToLS0Bfhedpbk1LQLhgtEEOvUlAwr9Nry5YTEDhLHGB2s5MQFMgSelD9klAodt5yCiFSEBAZNSv4VdMQA7YyPAnN0lA32XtdPwDUUDDq8VNmB9PQCrYLlJIsEtAKNxZvtnuTECSalkH2j5QQIddgsMbklBAC2MIa\u002fScUUCUbkkMQbpTQEZD\u002fHHr8lFA4\u002fm6YqMhUkBqrA+N9SFTQNPL5qYUB1JAalw5aly5UkBMKaWUUspSQJJQQ9pe+VJAxEuT\u002fcNyVUBalNK1FqVWQGxgkeVhqFZAiQT6SSLCVUCD6thbG+ZVQG\u002feRKRuqFVAubWhNqcqVUA2u409N\u002fNWQKDg+U87aVRAoCgRppC\u002fVUCwmq+TFvZTQGL58dkLLlFAVzCuEbl5UUAKOgNOg4NRQBxH10qEFVFA279dz76OUUBcdt+2JhFRQNXfMyi\u002fDVBACP2XsfK2T0DJZsdtGBJOQO215BBXmU9AYzNXbmFQTkBMPF9XbDROQLVKBEUz+khA63dR47H\u002fTEAKU07dbTlPQDrWils2X0lAey2TRQ6QR0DU0tLS0hpGQA7Pq4O5r0FAcrLJJptsQEDi5YG0LCpEQITk1iaRAEBAEKCfqNlxPUDIl2adQ8cxQIy02lRIqzFAfBv9oZBcN0DBWnGj7WFCQMK7fcHlzUNA\u002f\u002f\u002f\u002f\u002f3\u002fARECFxv6lqOtGQLeWv3pag0NAQzs8Z6aOQkAaM3sxsxdDQPvFeX2oe0VAaFOb2tSmQkBxMaTzFkNIQNSax5glmlBAdpF9TLHlUUDZQUOnY6NSQKt\u002fP99O9lJA"},"type":"scatter","xaxis":"x2","yaxis":"y2"},{"line":{"color":"#003366","width":1.5},"mode":"lines","name":"MACD","x":["2025-08-05T22:04:26.008323","2025-08-06T22:04:26.008323","2025-08-07T22:04:26.008323","2025-08-08T22:04:26.008323","2025-08-11T22:04:26.008323","2025-08-12T22:04:26.008323","2025-08-13T22:04:26.008323","2025-08-14T22:04:26.008323","2025-08-15T22:04:26.008323","2025-08-18T22:04:26.008323","2025-08-19T22:04:26.008323","2025-08-20T22:04:26.008323","2025-08-21T22:04:26.008323","2025-08-22T22:04:26.008323","2025-08-25T22:04:26.008323","2025-08-26T22:04:26.008323","2025-08-27T22:04:26.008323","2025-08-28T22:04:26.008323","2025-08-29T22:04:26.008323","2025-09-01T22:04:26.008323","2025-09-02T22:04:26.008323","2025-09-03T22:04:26.008323","2025-09-04T22:04:26.008323","2025-09-05T22:04:26.008323","2025-09-08T22:04:26.008323","2025-09-09T22:04:26.008323","2025-09-10T22:04:26.008323","2025-09-11T22:04:26.008323","2025-09-12T22:04:26.008323","2025-09-15T22:04:26.008323","2025-09-16T22:04:26.008323","2025-09-17T22:04:26.008323","2025-09-18T22:04:26.008323","2025-09-19T22:04:26.008323","2025-09-22T22:04:26.008323","2025-09-23T22:04:26.008323","2025-09-24T22:04:26.008323","2025-09-25T22:04:26.008323","2025-09-26T22:04:26.008323","2025-09-29T22:04:26.008323","2025-09-30T22:04:26.008323","2025-10-01T22:04:26.008323","2025-10-02T22:04:26.008323","2025-10-03T22:04:26.008323","2025-10-06T22:04:26.008323","2025-10-07T22:04:26.008323","2025-10-08T22:04:26.008323","2025-10-09T22:04:26.008323","2025-10-10T22:04:26.008323","2025-10-13T22:04:26.008323","2025-10-14T22:04:26.008323","2025-10-15T22:04:26.008323","2025-10-16T22:04:26.008323","2025-10-17T22:04:26.008323","2025-10-20T22:04:26.008323","2025-10-21T22:04:26.008323","2025-10-22T22:04:26.008323","2025-10-23T22:04:26.008323","2025-10-24T22:04:26.008323","2025-10-27T22:04:26.008323","2025-10-28T22:04:26.008323","2025-10-29T22:04:26.008323","2025-10-30T22:04:26.008323","2025-10-31T22:04:26.008323","2025-11-03T22:04:26.008323","2025-11-04T22:04:26.008323","2025-11-05T22:04:26.008323","2025-11-06T22:04:26.008323","2025-11-07T22:04:26.008323","2025-11-10T22:04:26.008323","2025-11-11T22:04:26.008323","2025-11-12T22:04:26.008323","2025-11-13T22:04:26.008323","2025-11-14T22:04:26.008323","2025-11-17T22:04:26.008323","2025-11-18T22:04:26.008323","2025-11-19T22:04:26.008323","2025-11-20T22:04:26.008323","2025-11-21T22:04:26.008323","2025-11-24T22:04:26.008323","2025-11-25T22:04:26.008323","2025-11-26T22:04:26.008323","2025-11-27T22:04:26.008323","2025-11-28T22:04:26.008323","2025-12-01T22:04:26.008323","2025-12-02T22:04:26.008323","2025-12-03T22:04:26.008323","2025-12-04T22:04:26.008323","2025-12-05T22:04:26.008323","2025-12-08T22:04:26.008323"],"y":{"dtype":"f8","bdata":"QKaXUYWrCMBAoS\u002fBmw0HwADzvzxY0wbAwBhBrjgbBsAADcj6axMGwMBYdek\u002faQXAwENxt8n3AsCA9PNjruP5v4Dg24L1+fW\u002fAGYgWFRW4L8A6lMYrRDbvwCaSW4+QNi\u002fAKzCtkvUwr8AIJXP87PBPwDgO\u002fL3wsc\u002fAOwEIrpQxj8AwAjX2tKfPwCkF+Qd286\u002fAERhWMd8x78AwIzc+kiIvwBYvaVKM7K\u002fADyZVmjSxT8AfNjEGf\u002fdPwBjW5OF4e4\u002fAPMxxLnu+D+A017ssSr8P4Bv0HqG3fs\u002fAEuNSThL\u002fz9AcAXuF38CQIB8fsQrnQRAgOKPHRl8BkDAHj0mCx8LQAAFjIITDA1AACIoRiXND0Bggw8aMZwQQMBWgXvuxBBAQF6fk8E4EkCgDG1KyVYUQADlgwag9RZAwA+psnKlGkDA5v2uZVkdQHDFEbmMGCBAILLLd+rYIEAg5\u002f8ljIUhQCAx\u002fQRuzSFA4O+i7TfvIUBQaKhB5k8iQBARRq0W2CFAYGo6otXWIkAQjXYg5LAiQOBmkvC2gSFAsOoNUJtEIUAQv3BPUYUhQKBIm751CiJAYNpQYCbGIkDgSUx8DC0jQEDvFP9OoCJA0FXEzXkXIkDgz280af8gQACavZOSvCBAsNMjTHNHIEDAWf\u002f6mUweQMAsnGtIzBtAwP9Vy8E\u002fGkDgpyGz6foXQOCpQTtwyRRAQOttEpaDEkBgKDI7yf0QQABjVH9z4w1AwHECpO8jCUBACYns\u002fAYGQABiF40ocf4\u002fAMrq\u002fOpW5z8AFAuD\u002fVXbv4BXWQ1vC\u002fa\u002fAPr\u002f3IaX\u002f7+AvNGHXwj+v4BGaTltGPe\u002fAHYlgZrr8b8AbLjjVq\u002fqvwDV2jucKO6\u002fAEJokYLs778AAq6GqLXxvwCD9OXpmvC\u002fgA\u002fcYGvq878AS3WjcObyvwAL1X3MMeG\u002fAOAuyr00pL8A1kHBFe3gPwDBEPp8GfQ\u002f"},"type":"scatter","xaxis":"x3","yaxis":"y3"},{"line":{"color":"#E06055","width":1},"mode":"lines","name":"Signal","x":["2025-08-05T22:04:26.008323","2025-08-06T22:04:26.008323","2025-08-07T22:04:26.008323","2025-08-08T22:04:26.008323","2025-08-11T22:04:26.008323","2025-08-12T22:04:26.008323","2025-08-13T22:04:26.008323","2025-08-14T22:04:26.008323","2025-08-15T22:04:26.008323","2025-08-18T22:04:26.008323","2025-08-19T22:04:26.008323","2025-08-20T22:04:26.008323","2025-08-21T22:04:26.008323","2025-08-22T22:04:26.008323","2025-08-25T22:04:26.008323","2025-08-26T22:04:26.008323","2025-08-27T22:04:26.008323","2025-08-28T22:04:26.008323","2025-08-29T22:04:26.008323","2025-09-01T22:04:26.008323","2025-09-02T22:04:26.008323","2025-09-03T22:04:26.008323","2025-09-04T22:04:26.008323","2025-09-05T22:04:26.008323","2025-09-08T22:04:26.008323","2025-09-09T22:04:26.008323","2025-09-10T22:04:26.008323","2025-09-11T22:04:26.008323","2025-09-12T22:04:26.008323","2025-09-15T22:04:26.008323","2025-09-16T22:04:26.008323","2025-09-17T22:04:26.008323","2025-09-18T22:04:26.008323","2025-09-19T22:04:26.008323","2025-09-22T22:04:26.008323","2025-09-23T22:04:26.008323","2025-09-24T22:04:26.008323","2025-09-25T22:04:26.008323","2025-09-26T22:04:26.008323","2025-09-29T22:04:26.008323","2025-09-30T22:04:26.008323","2025-10-01T22:04:26.008323","2025-10-02T22:04:26.008323","2025-10-03T22:04:26.008323","2025-10-06T22:04:26.008323","2025-10-07T22:04:26.008323","2025-10-08T22:04:26.008323","2025-10-09T22:04:26.008323","2025-10-10T22:04:26.008323","2025-10-13T22:04:26.008323","2025-10-14T22:04:26.008323","2025-10-15T22:04:26.008323","2025-10-16T22:04:26.008323","2025-10-17T22:04:26.008323","2025-10-20T22:04:26.008323","2025-10-21T22:04:26.008323","2025-10-22T22:04:26.008323","2025-10-23T22:04:26.008323","2025-10-24T22:04:26.008323","2025-10-27T22:04:26.008323","2025-10-28T22:04:26.008323","2025-10-29T22:04:26.008323","2025-10-30T22:04:26.008323","2025-10-31T22:04:26.008323","2025-11-03T22:04:26.008323","2025-11-04T22:04:26.008323","2025-11-05T22:04:26.008323","2025-11-06T22:04:26.008323","2025-11-07T22:04:26.008323","2025-11-10T22:04:26.008323","2025-11-11T22:04:26.008323","2025-11-12T22:04:26.008323","2025-11-13T22:04:26.008323","2025-11-14T22:04:26.008323","2025-11-17T22:04:26.008323","2025-11-18T22:04:26.008323","2025-11-19T22:04:26.008323","2025-11-20T22:04:26.008323","2025-11-21T22:04:26.008323","2025-11-24T22:04:26.008323","2025-11-25T22:04:26.008323","2025-11-26T22:04:26.008323","2025-11-27T22:04:26.008323","2025-11-28T22:04:26.008323","2025-12-01T22:04:26.008323","2025-12-02T22:04:26.008323","2025-12-03T22:04:26.008323","2025-12-04T22:04:26.008323","2025-12-05T22:04:26.008323","2025-12-08T22:04:26.008323"],"y":{"dtype":"f8","bdata":"W0j2Usk4BcAiWpsCjZYFwE8SCdvo1QXAmRPhnsXjBcBHEtxKTe0FwGAgYTfk0gXAplpkt6tABcD44BsDTpcDwDoX+fXW3gHAKvzE+Pk5\u002fr\u002fW+9Sh0Ij5vywRLjrdo\u002fW\u002fo+scE2bI8b8F0WaHPZHrvwXcaNOk3eS\u002f1a4Nglsn379E1lpFc4bYv9E7fgGstNa\u002fDR3VVmqD1L\u002fYXgsK\u002fY\u002fQv40gpSDpUcy\u002fcXRloqVKwr88KW6Z0ROVv63kiubVmMY\u002feLeSXx383D\u002fKai3rUtzmPwiCRO1Eb+0\u002faqk3B1oI8j88gftkHtP1P2TM+ziQtPk\u002fHf4C0+OO\u002fT\u002fMaw1cXT8BQKS9JsqBmwNAhJ7Ar9ULBkCR5jnK8UcIQPSn+5\u002ftIQpAEKyiVNgxDEDnwa2U\u002fbAOQCpIxjxS3hBArwlaVPLSEkBMnEcz1u0UQDb\u002f2T99LhdA0nmZ\u002fMFIGUC1ikfZbDwbQJ6Cnnzp6BxAcsiMjzdNHkAWyoDz7pAfQHOHQbf9MSBAcE5zGVy5IEDDJ6fnEB4hQPzNb+n+MSFAh6DCyrc1IUA8QLJLo0UhQITb4JUAbSFAfQ7EJAiyIUCRTd\u002fP1f0hQIEH6nJUHiJAxLAVhfUcIkDKg\u002fR02eMhQDyI6UfLqCFAhsqOFSBiIUBlkViqwu8gQP6rCZM8VCBA8N9TelRgH0AhO7CFpeUdQEhRzXY0ExxA4Dy6Yq4pGkCUBZ8nGlQYQCrbOnmgcxZAgodi8bF5FEC8Uyk\u002fQZUSQEpulTl2YxBAKtT6G3xjC0AIlhvzPDoFQMER5xsYjv0\u002faA\u002fstl5T8T9NZxhDfGrfP8Q1\u002fR4woLo\u002fsg09wrAFwr96\u002fS4PA+LRv8jsSVenXtq\u002f6msyc8Pu4L\u002fuI6ErRqHkv4y34n5iJee\u002fcf+m8qx76r+OHU7QHb\u002fsv6XmNSanb+q\u002fHuh+F8hm5b8whH0L0Xjbv8yj9Wpzl7e\u002f"},"type":"scatter","xaxis":"x3","yaxis":"y3"},{"marker":{"color":["#E06055","#E06055","#E06055","#E06055","#E06055","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#2ECC71","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#E06055","#2ECC71","#2ECC71","#2ECC71","#2ECC71"]},"name":"Histogram","opacity":0.5,"x":["2025-08-05T22:04:26.008323","2025-08-06T22:04:26.008323","2025-08-07T22:04:26.008323","2025-08-08T22:04:26.008323","2025-08-11T22:04:26.008323","2025-08-12T22:04:26.008323","2025-08-13T22:04:26.008323","2025-08-14T22:04:26.008323","2025-08-15T22:04:26.008323","2025-08-18T22:04:26.008323","2025-08-19T22:04:26.008323","2025-08-20T22:04:26.008323","2025-08-21T22:04:26.008323","2025-08-22T22:04:26.008323","2025-08-25T22:04:26.008323","2025-08-26T22:04:26.008323","2025-08-27T22:04:26.008323","2025-08-28T22:04:26.008323","2025-08-29T22:04:26.008323","2025-09-01T22:04:26.008323","2025-09-02T22:04:26.008323","2025-09-03T22:04:26.008323","2025-09-04T22:04:26.008323","2025-09-05T22:04:26.008323","2025-09-08T22:04:26.008323","2025-09-09T22:04:26.008323","2025-09-10T22:04:26.008323","2025-09-11T22:04:26.008323","2025-09-12T22:04:26.008323","2025-09-15T22:04:26.008323","2025-09-16T22:04:26.008323","2025-09-17T22:04:26.008323","2025-09-18T22:04:26.008323","2025-09-19T22:04:26.008323","2025-09-22T22:04:26.008323","2025-09-23T22:04:26.008323","2025-09-24T22:04:26.008323","2025-09-25T22:04:26.008323","2025-09-26T22:04:26.008323","2025-09-29T22:04:26.008323","2025-09-30T22:04:26.008323","2025-10-01T22:04:26.008323","2025-10-02T22:04:26.008323","2025-10-03T22:04:26.008323","2025-10-06T22:04:26.008323","2025-10-07T22:04:26.008323","2025-10-08T22:04:26.008323","2025-10-09T22:04:26.008323","2025-10-10T22:04:26.008323","2025-10-13T22:04:26.008323","2025-10-14T22:04:26.008323","2025-10-15T22:04:26.008323","2025-10-16T22:04:26.008323","2025-10-17T22:04:26.008323","2025-10-20T22:04:26.008323","2025-10-21T22:04:26.008323","2025-10-22T22:04:26.008323","2025-10-23T22:04:26.008323","2025-10-24T22:04:26.008323","2025-10-27T22:04:26.008323","2025-10-28T22:04:26.008323","2025-10-29T22:04:26.008323","2025-10-30T22:04:26.008323","2025-10-31T22:04:26.008323","2025-11-03T22:04:26.008323","2025-11-04T22:04:26.008323","2025-11-05T22:04:26.008323","2025-11-06T22:04:26.008323","2025-11-07T22:04:26.008323","2025-11-10T22:04:26.008323","2025-11-11T22:04:26.008323","2025-11-12T22:04:26.008323","2025-11-13T22:04:26.008323","2025-11-14T22:04:26.008323","2025-11-17T22:04:26.008323","2025-11-18T22:04:26.008323","2025-11-19T22:04:26.008323","2025-11-20T22:04:26.008323","2025-11-21T22:04:26.008323","2025-11-24T22:04:26.008323","2025-11-25T22:04:26.008323","2025-11-26T22:04:26.008323","2025-11-27T22:04:26.008323","2025-11-28T22:04:26.008323","2025-12-01T22:04:26.008323","2025-12-02T22:04:26.008323","2025-12-03T22:04:26.008323","2025-12-04T22:04:26.008323","2025-12-05T22:04:26.008323","2025-12-08T22:04:26.008323"],"y":{"dtype":"f8","bdata":"KO8K9d+V27\u002fgcUTp63DHvyAW3Dbsrb+\u002fgJMCsIe5m7+AXP31Vw+TvwDo8XoTaao\u002fMLeY\u002fw9H0j\u002fgmodE25XqP+ibLNJwh+s\u002fKsm0zM8O9j9WAcBbpcTyP1hVNz2bJ+8\u002fRiyJOLnb7j8FGUx7Ov7vPwXU989izuo\u002fahKISdwn5T9EYsvyoIPaP0SnyT10HL0\u002fGvZIVQ2KwT+w8U1mapvPP410xs1DOMM\u002fOFh\u002f\u002fIYO1D+UXm\u002feVlDfP9WpuBlQO+k\u002fIkVNbLKv8T8bHsh2iLzwP\u002fhcXAjIS+o\u002fLEOrhLyF6j+Ivh7uIlbuPzhZAqCOC+8\u002fxo050JzS7j\u002foZV+UW7\u002fzP7iOynAj4fI\u002f+AbPLJ+C8z9eQMrT4ODxPzAWHFy9n+0\u002f4CA4pVV\u002f8D+yrlgAKvnzP1hz9iY3Xfg\u002fRBg8eQFK\u002fz\u002folGz3HtcAQFQXk2Q4BQJA3NT75SXSAEAsDuHKrTr\u002fP4h+bzXKx\u002fo\u002fOF3kLuFE9j8oGkA\u002fdjv0P9CZSGCPYeo\u002fgN84Rszr8D\u002fQVPaMMy3pPwA5psgB7sM\u002fAFKUlgrHnT8Aaj\u002ffAde\u002fP4CjTRelrtM\u002fML7MuONB4T\u002fwxM\u002fGavPiP+D3XIVRP9A\u002fANBrRd3uhb9AfZYQCI7cv4DHfYUWh92\u002fYG2vlsyq4b9QSI7NWpfsv\u002fCs3OnCcPO\u002fwID3u0qC9L8ETTpK76r3v6CdLu4QJ\u002f2\u002fgEYxQWGY\u002fr\u002fQdLOxQ1n9v6imQuaaB\u002f6\u002fiDqFfeie\u002f79wPJMjC0f+v5QrnyxYjgHAqiHAXMGNBcCI+Hyj\u002fKQIwKA0oJTDzAnAtAT2yXJ1CMAq60tMf\u002fECwNwZWTtwwvi\u002flKi70chV779D7SBcVb7hv5zeNZBI+eC\u002fLKxrPH773b8kwHXDFZTdv+icDJriINS\u002fHj8inlOy2r\u002fk8DjthhvSv0q3wVC1e9I\u002fHvrbOnwj5D8YmABHfqnuPz0bwDD0kvU\u002f"},"type":"bar","xaxis":"x3","yaxis":"y3"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"matches":"x3","showticklabels":false,"tickfont":{"size":10},"showgrid":true,"gridcolor":"#F5F5F5","gridwidth":1,"linecolor":"#CCCCCC","linewidth":1},"yaxis":{"anchor":"x","domain":[0.55,1.0],"tickfont":{"size":10},"showgrid":true,"gridcolor":"#F5F5F5","gridwidth":1,"linecolor":"#CCCCCC","linewidth":1,"title":{"text":"Price ($)"}},"xaxis2":{"anchor":"y2","domain":[0.0,1.0],"matches":"x3","showticklabels":false},"yaxis2":{"anchor":"x2","domain":[0.275,0.5],"title":{"text":"RSI"},"range":[0,100]},"xaxis3":{"anchor":"y3","domain":[0.0,1.0]},"yaxis3":{"anchor":"x3","domain":[0.0,0.225],"title":{"text":"MACD"}},"annotations":[{"font":{"size":16},"showarrow":false,"text":"Price","x":0.5,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper"},{"font":{"size":16},"showarrow":false,"text":"RSI (14)","x":0.5,"xanchor":"center","xref":"paper","y":0.5,"yanchor":"bottom","yref":"paper"},{"font":{"size":16},"showarrow":false,"text":"MACD (12,26,9)","x":0.5,"xanchor":"center","xref":"paper","y":0.225,"yanchor":"bottom","yref":"paper"}],"shapes":[{"line":{"color":"#E06055","dash":"dash"},"type":"line","x0":0,"x1":1,"xref":"x2 domain","y0":70,"y1":70,"yref":"y2"},{"line":{"color":"#2ECC71","dash":"dash"},"type":"line","x0":0,"x1":1,"xref":"x2 domain","y0":30,"y1":30,"yref":"y2"},{"line":{"color":"#CCCCCC","dash":"dot"},"type":"line","x0":0,"x1":1,"xref":"x2 domain","y0":50,"y1":50,"yref":"y2"}],"title":{"font":{"size":16,"color":"#003366","family":"Helvetica Neue, Arial, sans-serif"},"text":"ORCL - Technical Indicators Dashboard","x":0,"xanchor":"left"},"font":{"family":"Helvetica Neue, Arial, sans-serif","size":11,"color":"#404040"},"margin":{"l":60,"r":40,"t":60,"b":60},"legend":{"orientation":"h","yanchor":"bottom","y":1.02,"xanchor":"right","x":1,"bgcolor":"rgba(255,255,255,0.8)","bordercolor":"#CCCCCC","borderwidth":1},"plot_bgcolor":"#FFFFFF","paper_bgcolor":"#FFFFFF","hovermode":"x unified"},                        {"displayModeBar": true, "modeBarButtonsToRemove": ["lasso2d", "select2d"], "displaylogo": false, "responsive": true}                    )                };            </script>        </div></div>
+            <p class="chart-caption">Multi-panel view: Price trend, RSI (14) with overbought/oversold zones, and MACD histogram for momentum analysis.</p>
+        </div>
+
+        <div class="chart-container">
+            <h3>Period Performance</h3>
+            <div class="chart-wrapper"><div>                            <div id="9aecd4ff-e1c4-41f9-aff9-7790926202d8" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("9aecd4ff-e1c4-41f9-aff9-7790926202d8")) {                    Plotly.newPlot(                        "9aecd4ff-e1c4-41f9-aff9-7790926202d8",                        [{"marker":{"color":["#2ECC71","#2ECC71","#2ECC71","#2ECC71"]},"text":["+7.0%","+2.1%","+23.4%","+62.5%"],"textfont":{"color":"#404040","size":12},"textposition":"outside","x":["1 Week","1 Month","3 Months","YTD"],"y":[6.9734197006924346,2.1151385927505366,23.363041574365045,62.466924486057415],"type":"bar"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"title":{"font":{"size":16,"color":"#003366","family":"Helvetica Neue, Arial, sans-serif"},"text":"ORCL - Period Returns (%)","x":0,"xanchor":"left"},"font":{"family":"Helvetica Neue, Arial, sans-serif","size":11,"color":"#404040"},"margin":{"l":60,"r":40,"t":60,"b":60},"legend":{"orientation":"h","yanchor":"bottom","y":1.02,"xanchor":"right","x":1,"bgcolor":"rgba(255,255,255,0.8)","bordercolor":"#CCCCCC","borderwidth":1},"xaxis":{"tickfont":{"size":10},"showgrid":true,"gridcolor":"#F5F5F5","gridwidth":1,"linecolor":"#CCCCCC","linewidth":1},"yaxis":{"tickfont":{"size":10},"showgrid":true,"gridcolor":"#F5F5F5","gridwidth":1,"linecolor":"#CCCCCC","linewidth":1,"title":{"text":"Return (%)"}},"plot_bgcolor":"#FFFFFF","paper_bgcolor":"#FFFFFF","hovermode":"x unified","shapes":[{"line":{"color":"#404040","width":1},"type":"line","x0":0,"x1":1,"xref":"x domain","y0":0,"y1":0,"yref":"y"}]},                        {"displayModeBar": true, "modeBarButtonsToRemove": ["lasso2d", "select2d"], "displaylogo": false, "responsive": true}                    )                };            </script>        </div></div>
+            <p class="chart-caption">Returns over different holding periods. Green indicates positive returns, red indicates losses.</p>
+        </div>
+
+    </section>
+
+    <!-- Detailed Trader Insights -->
+    <section>
+        <h2>Detailed Trader Analysis</h2>
+
+        <div class="insight-card">
+            <div class="insight-header">
+                <h3>Day Trader</h3>
+                <div class="insight-badges">
+                    <span class="badge badge-high">Relevance: High</span>
+                    <span class="badge badge-confidence">MODERATE</span>
+                </div>
+            </div>
+            <div class="insight-body">
+                <div class="insight-section">
+                    <h4>Analysis</h4>
+                    <p>Oracle is presenting an intriguing intraday setup following a significant multi-day bounce from the $185.66 low established on January 8th. The stock closed at $204.68 on January 12th, right at the upper Bollinger Band of $204.99, which represents a critical resistance zone. The recent price action shows strong buying pressure with volume expansion - January 9th saw 26.2M shares traded (well above the recent average of ~16-19M), and January 12th maintained elevated volume at 25.3M shares.
+
+From ...</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>Recommended Action</h4>
+                    <div class="action-box">- **Long Setup**: Enter on break above $206.60 with volume confirmation | Target 1: $210.43 (50-SMA) | Target 2: $215 | Stop: $202.50 | Risk/Reward: 1:2.5
+- **Short Setup**: Enter on failure to hold $200 with volume | Target 1: $193 | Target 2: $189 | Stop: $203 | Risk/Reward: 1:2
+- **Scalp Range**: Trade the $200-$205 range if consolidation continues, taking quick 1-2% moves</div>
+                </div>
+
+                <div class="insight-section">
+                    <h4>Key Risks</h4>
+                    <ul class="risk-list">
+                        <li>High ATR ($7.99) means wider stops required, increasing capital risk per trade</li>
+                        <li>Stock is in a broader downtrend (below both major SMAs), increasing probability of failed rallies</li>
+                        <li>Any negative sector news or broader market weakness could trigger rapid reversals</li>
+                        <li>Low liquidity in pre-market or after-hours could lead to gap moves that invalidate setups</li>
+                        <li>The stock has shown tendency for large intraday swings (e.g., January 9th: $188.78 low to $200.18 high)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="insight-card">
+            <div class="insight-header">
+                <h3>Swing Trader</h3>
+                <div class="insight-badges">
+                    <span class="badge badge-high">Relevance: High</span>
+                    <span class="badge badge-confidence">HIGH</span>
+                </div>
+            </div>
+            <div class="insight-body">
+                <div class="insight-section">
+                    <h4>Analysis</h4>
+                    <p>Oracle presents a compelling swing trade setup at a critical technical juncture. The stock has completed a dramatic decline from the October 16th high of $321.69 to the January 8th low of $185.66 - a decline of approximately 42%. This represents a significant mean reversion opportunity, particularly given the strong bounce over the past four trading sessions, which has produced a gain of approximately 10% from the low.
+
+The current technical picture shows ORCL testing the upper Bollinger Band at...</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>Recommended Action</h4>
+                    <div class="action-box">- **Aggressive Long**: Enter at $200-$202 on any pullback, or current levels if risk tolerance allows | Target 1: $210.43 | Target 2: $215.78 | Target 3: $220 | Stop: $194 | Risk/Reward: 1:3 | Timeframe: 5-10 trading days
+- **Conservative Long**: Wait for break and hold above $210.43, enter on retest | Target 1: $220 | Target 2: $230 | Stop: $205 | Risk/Reward: 1:3.5 | Timeframe: 10-15 trading day...</div>
+                </div>
+
+                <div class="insight-section">
+                    <h4>Key Risks</h4>
+                    <ul class="risk-list">
+                        <li>Stock remains in confirmed downtrend (below 50-day and 200-day SMAs)</li>
+                        <li>Upper Bollinger Band test often leads to short-term pullbacks</li>
+                        <li>Unknown fundamental catalyst for October-January decline may still be in play</li>
+                        <li>Broader market weakness could derail individual stock recovery</li>
+                        <li>Resistance zone at $210-$216 is significant and may require multiple tests to break</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="insight-card">
+            <div class="insight-header">
+                <h3>Momentum Trader</h3>
+                <div class="insight-badges">
+                    <span class="badge badge-medium">Relevance: Medium</span>
+                    <span class="badge badge-confidence">MODERATE</span>
+                </div>
+            </div>
+            <div class="insight-body">
+                <div class="insight-section">
+                    <h4>Analysis</h4>
+                    <p>Oracle presents a challenging setup for momentum traders, as the stock is clearly not in a confirmed uptrend but is showing early signs of potential momentum reversal. The primary concern is that ORCL remains firmly below both its 50-day SMA ($210.43) and 200-day SMA ($215.78), which are the key trend-following indicators that momentum strategies rely upon. A true momentum play requires the stock to be above these levels, ideally with both moving averages sloping upward.
+
+However, the recent pri...</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>Recommended Action</h4>
+                    <div class="action-box">- **Early Momentum Entry**: Enter 25% position at current levels, add 25% on break above $210.43, add final 50% on break above $215.78 | Target: $230-$240 | Trailing Stop: 8% from highest close | Timeframe: 2-4 weeks
+- **Conservative Momentum Entry**: Wait for confirmed break and close above $215.78 (200-day SMA) | Enter on first pullback to $212-$215 | Target: $240-$250 | Stop: Below $205 | Timef...</div>
+                </div>
+
+                <div class="insight-section">
+                    <h4>Key Risks</h4>
+                    <ul class="risk-list">
+                        <li>Stock is NOT in an established uptrend - this is a counter-trend/reversal play</li>
+                        <li>Momentum strategies perform poorly in choppy, range-bound markets</li>
+                        <li>The 42% decline from October highs suggests strong overhead supply/resistance</li>
+                        <li>Relative strength vs. broader market is unknown - stock may be underperforming sector/index</li>
+                        <li>False breakouts above $210-$215 could trap momentum buyers</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="insight-card">
+            <div class="insight-header">
+                <h3>Growth Investor</h3>
+                <div class="insight-badges">
+                    <span class="badge badge-medium">Relevance: Medium</span>
+                    <span class="badge badge-confidence">MODERATE</span>
+                </div>
+            </div>
+            <div class="insight-body">
+                <div class="insight-section">
+                    <h4>Analysis</h4>
+                    <p>For growth investors with a multi-year horizon, the recent 42% decline in Oracle's stock price from $321.69 (October 16th) to $185.66 (January 8th) represents either a significant buying opportunity or a warning sign of deteriorating fundamentals - the distinction depends entirely on what drove the decline, which is not evident from the technical data alone.
+
+Oracle's position as a major enterprise software and cloud infrastructure provider gives it exposure to several long-term growth themes: c...</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>Recommended Action</h4>
+                    <div class="action-box">- **Research First**: Before any position, determine the fundamental cause of the October-January decline through earnings reports, analyst calls, and company guidance
+- **If Fundamentals Intact**: Begin building position in 3-4 tranches: 25% now at $200-$205, 25% at $190-$195 if pullback occurs, 25% on break above $215, final 25% on break above $230 | Target: $300-$350 over 12-24 months | Stop: O...</div>
+                </div>
+
+                <div class="insight-section">
+                    <h4>Key Risks</h4>
+                    <ul class="risk-list">
+                        <li>Unknown fundamental catalyst for 42% decline may represent permanent thesis impairment</li>
+                        <li>Cloud infrastructure competition is intensifying (AWS, Azure, Google Cloud)</li>
+                        <li>Enterprise IT spending may be contracting in economic slowdown</li>
+                        <li>AI infrastructure demand may be benefiting competitors more than Oracle</li>
+                        <li>Valuation multiples for large-cap tech may be compressing structurally</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="insight-card">
+            <div class="insight-header">
+                <h3>Value Investor</h3>
+                <div class="insight-badges">
+                    <span class="badge badge-medium">Relevance: Medium</span>
+                    <span class="badge badge-confidence">LOW</span>
+                </div>
+            </div>
+            <div class="insight-body">
+                <div class="insight-section">
+                    <h4>Analysis</h4>
+                    <p></p>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <footer class="report-footer">
+        <div class="sources">
+            <h4>Data Sources</h4>
+            <ul>
+                <li>Daily price and volume data via Alpha Vantage API</li>
+                <li>Technical indicators calculated from OHLCV data (50/200-day SMA, RSI-14, MACD 12-26-9, Bollinger Bands 20-2, ATR-14)</li>
+                <li>AI Agent analysis for trader-specific insights</li>
+            </ul>
+        </div>
+
+        <div class="disclaimer">
+            <strong>Disclaimer:</strong> This analysis is for informational purposes only and does not constitute investment advice.
+            Past performance does not guarantee future results. The views expressed represent analysis as of the report date
+            and are subject to change. Investors should conduct their own due diligence and consult with qualified financial
+            advisors before making investment decisions.
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 1rem; font-size: 0.75rem; color: var(--charcoal);">
+            <span>Generated: January 14, 2026</span>
+            <span>Symbol: ORCL</span>
+            <span>KXAITrader Report v1.0</span>
+        </div>
+    </footer>
+</body>
+</html>
