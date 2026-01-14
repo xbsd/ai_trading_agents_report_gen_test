@@ -1,0 +1,31 @@
+# KXAITrader Report Generation System - Python Dependencies
+# Install with: pip install -r requirements.txt
+
+# Data fetching and processing
+requests>=2.31.0
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Chart generation
+plotly>=5.18.0
+kaleido>=0.2.1  # For static image export from Plotly
+
+# Technical analysis indicators
+ta>=0.11.0  # Technical Analysis library
+pandas-ta>=0.3.14b  # More comprehensive TA library
+
+# HTML/Template processing
+jinja2>=3.1.0
+
+# Date/time handling
+python-dateutil>=2.8.0
+
+# Environment variables
+python-dotenv>=1.0.0
+
+# Optional: For enhanced styling
+beautifulsoup4>=4.12.0
+
+# Optional: For async API calls (faster multi-ticker fetching)
+aiohttp>=3.9.0
+asyncio-throttle>=1.0.0
